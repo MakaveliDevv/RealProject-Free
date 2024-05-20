@@ -4,6 +4,7 @@ using UnityEngine;
 public class InspectObject : MonoBehaviour
 {
     private new Camera camera;
+    [SerializeField] private GameObject player;
 
     private Transform inspectObjectTransform;
     [SerializeField] private float deltaRotationX;
@@ -14,6 +15,8 @@ public class InspectObject : MonoBehaviour
     void Awake() 
     {
         camera = GetComponent<Camera>();
+        // transform.SetParent(player.transform);
+        // transform.position = player.transform.position + new Vector3(0f, .5f, 0f);
     }
 
     void Update() 
