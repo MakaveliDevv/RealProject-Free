@@ -6,7 +6,7 @@ public class InspectObject : MonoBehaviour
     private new Camera camera;
     [SerializeField] private GameObject player;
 
-    private Transform inspectObjectTransform;
+    [SerializeField] private Transform inspectObjectTransform;
     [SerializeField] private float deltaRotationX;
     [SerializeField] private float deltaRotationY;
 
