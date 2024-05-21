@@ -80,7 +80,10 @@ public class PlayerController : MonoBehaviour
 
     void MouseLook()
     {
-        if(!ableToLookAround)
+        // if(!ableToLookAround)
+        //     return;
+        cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
+        if(inspectObject.inspectMode)
             return;
 
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
@@ -100,7 +103,10 @@ public class PlayerController : MonoBehaviour
 
     void Moving() 
     {
-        if(!allowedToMove) 
+        // if(!allowedToMove) 
+        //     return;
+        cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
+        if(inspectObject.inspectMode)
             return;
 
 
@@ -193,7 +199,11 @@ public class PlayerController : MonoBehaviour
 
     void CameraShake() 
     {
-        if(!ableToShake)
+        // if(!ableToShake)
+        //     return;
+
+        cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
+        if(inspectObject.inspectMode)
             return;
 
         // Shake camera

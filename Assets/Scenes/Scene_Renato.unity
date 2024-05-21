@@ -769,15 +769,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _InteractableType: 0
-  radius: 3
-  camera: {fileID: 0}
-  _PlayerContr: {fileID: 0}
-  yOffset: {x: 0, y: 0.5, z: 0}
-  rotateSpeed: 6
-  interacting: 0
-  inInspectMode: 0
+  _ObjectType: 0
+  radius: 1.5
   objectGrabbed: 0
+  _PlayerContr: {fileID: 0}
+  camera: {fileID: 0}
+  rotateSpeed: 6
+  inInspectMode: 0
   forcePower: 2.5
+  distanceFromCamera: 2
 --- !u!1 &961739749
 GameObject:
   m_ObjectHideFlags: 0
@@ -931,7 +931,7 @@ MonoBehaviour:
   camera: {fileID: 0}
   rotateSpeed: 6
   detectionRadius: 0.5
-  ableToInspect: 0
+  inspectMode: 0
 --- !u!1 &1160234425
 GameObject:
   m_ObjectHideFlags: 0

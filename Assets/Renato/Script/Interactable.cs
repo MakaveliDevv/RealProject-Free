@@ -4,12 +4,25 @@ using UnityEngine;
 
 public class Interactable : MonoBehaviour
 {
-    public enum InteractableType { INSPECTABLE }
+    // Enum
+    public enum InteractableType { INSPECTABLE, READABLE }
+    public enum ObjectType { GRABABLE, NON_GRABABLE }
+    public enum GravitationalType { FLOATING, NON_FLOATING }
     public InteractableType _InteractableType;
+    public ObjectType _ObjectType;
+    public GravitationalType _GravitationalType;
+
+
     private bool inRange;
     [SerializeField] private float radius = 3f;
 
     protected GameObject target; 
+    public bool objectGrabbed;
+    public PlayerController _PlayerContr;
+
+    private bool canInteract = true;
+    private float interactCooldown = 0.2f;
+
 
     void Awake() 
     {
@@ -25,15 +38,40 @@ public class Interactable : MonoBehaviour
 
     public virtual void Interact() 
     {
-        // Do something
+        if (Input.GetKeyDown(KeyCode.E)) 
+        {
+            Debug.Log("E key pressed");
+            if (_ObjectType == ObjectType.GRABABLE) 
+            {
+                ToggleGrab();
+            }
+        }
+    }
+
+    private void ToggleGrab()
+    {
+        if (!objectGrabbed) 
+        {
+            Debug.Log("Grabbing object");
+            objectGrabbed = true;
+            transform.position = _PlayerContr.objectPos.transform.position;
+            transform.SetParent(_PlayerContr.objectPos.transform);
+        } 
+        else 
+        {
+            Debug.Log("Releasing object");
+            objectGrabbed = false;
+            transform.SetParent(null);
+        }
     }
 
     void OnTriggerEnter(Collider collider) 
     {
         collider.TryGetComponent<PlayerController>(out var player);
-        if(player != null && !inRange) 
+        _PlayerContr = player;
+        if(_PlayerContr != null && !inRange) 
         {
-            target = player.gameObject;
+            target = _PlayerContr.gameObject;
             inRange = true;
             InteractOnCollision();
         }
@@ -41,8 +79,8 @@ public class Interactable : MonoBehaviour
 
     void OnTriggerExit(Collider collider) 
     {
-        collider.TryGetComponent<PlayerController>(out var player);
-        if(player != null && inRange)  
+        // collider.TryGetComponent<PlayerController>(out var player);
+        if(_PlayerContr != null && inRange)  
             inRange = false;
         
     }
@@ -50,10 +88,36 @@ public class Interactable : MonoBehaviour
     void OnTriggerStay(Collider collider) 
     {
         collider.TryGetComponent<PlayerController>(out var player);
-        if(player != null && inRange)  
+        _PlayerContr = player;
+        if(_PlayerContr != null && inRange)  
             Interact();
         
     }
+
+    // public virtual void Interact() 
+    // {
+    //     // Grab the object if possible
+    //     if(_ObjectType == ObjectType.GRABABLE && !objectGrabbed && Input.GetKey(KeyCode.E)) 
+    //     {
+    //         if(objectGrabbed)
+    //             return;
+
+    //         objectGrabbed = true;
+
+    //         transform.position = _PlayerContr.objectPos.transform.position;
+    //         transform.SetParent(_PlayerContr.objectPos.transform);
+    //     }
+
+    //     // Release the object
+    //     if(_ObjectType == ObjectType.GRABABLE && objectGrabbed && Input.GetKeyDown(KeyCode.E))
+    //     {
+    //         if(!objectGrabbed)
+    //             return;
+
+    //         objectGrabbed = false;
+    //         transform.SetParent(null); // Detach from any parent to be centered independently
+    //     }
+    // }
 
     void OnDrawGizmosSelect() 
     {

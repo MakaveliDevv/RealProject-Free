@@ -9,7 +9,7 @@ public class InspectObject : MonoBehaviour
     private Transform inspectObjectTransform;
     private float deltaRotationX;
     private float deltaRotationY;
-    public bool ableToInspect;
+    public bool inspectMode;
 
     private struct CustomRaycastHit
     {
@@ -26,7 +26,7 @@ public class InspectObject : MonoBehaviour
 
     void Update()
     {
-        if(!ableToInspect)
+        if(!inspectMode)
             return;
              
         if (Input.GetMouseButtonDown(0))
