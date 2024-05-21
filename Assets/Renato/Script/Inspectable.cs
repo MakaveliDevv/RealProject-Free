@@ -4,31 +4,41 @@ using UnityEngine;
 
 public class Inspectable : Interactable
 {
-    private Transform inspectObjectTransform;
-    private new Camera camera;
+    [SerializeField] private new Camera camera;
+    private InspectObject _InspectObject;
+    public PlayerController _PlayerContr;
+    [SerializeField] private Vector3 yOffset = new(0, 0, 0);
 
-    private float deltaRotationX;
-    private float deltaRotationY;
     [SerializeField] private float rotateSpeed = 2f;
     [SerializeField] private bool interacting;
-
+    [SerializeField] private bool inInspectMode;
+    [SerializeField] private bool objectGrabbed;
+    [SerializeField] private float forcePower = 2.5f;
 
     void Start() 
-    {
+    {   
         camera = Camera.main;
-        inspectObjectTransform = transform;
+        _InspectObject = camera.GetComponent<InspectObject>();
     }
 
     public override void Interact() 
     {
         base.Interact();
+
+        _PlayerContr = camera.GetComponentInParent<PlayerController>();
+        InteractWithObject();
         InputInspect();
     }
 
     private void InputInspect() 
     {
-        if(Input.GetKey(KeyCode.E) && !interacting) // Change into unity's input system
+        if(Input.GetKey(KeyCode.F) && !interacting) // Change into unity's input system
         {
+            if(inInspectMode)
+                return;
+
+            inInspectMode = true;
+
             Debug.Log("Start inspecting");
             interacting = true;
             
@@ -41,57 +51,67 @@ public class Inspectable : Interactable
             playerController.ableToShake = false;
 
             // Fix the camera towards the object
+            // Set the camera position to the initalposition
+            camera.transform.localPosition = _PlayerContr.initialCamPos + yOffset;
+
+            // Stop looking arounnd
+            playerController.ableToLookAround = false;
+
+            // Unlock cursor
+            Cursor.lockState = CursorLockMode.None;
+            
+            // Inspect object
+            _InspectObject.ableToInspect = true;
         } 
         
         if(Input.GetKey(KeyCode.R) && interacting) 
         {
+            if(!inInspectMode)
+                return;
+
+            inInspectMode = false;
+
             Debug.Log("Stop inspecting");
             interacting = false;
 
-            target.TryGetComponent<PlayerController>(out var playerController);
-
             // Reset movement
-            playerController.allowedToMove = true;
+            _PlayerContr.allowedToMove = true;
 
             // Reset shaking
-            playerController.ableToShake = true;
+            _PlayerContr.ableToShake = true;
 
             // Release the camera
+            _PlayerContr.ableToLookAround = true;
+
+            // Lock cursor
+            Cursor.lockState = CursorLockMode.Locked;
+
+            _InspectObject.ableToInspect = false;
         }
     }
 
-    // void Update() 
-    // {
-    //     if(Input.GetMouseButtonDown(0)) 
-    //     {
-    //         if (CameraToMouseRay(Input.mousePosition, out RaycastHit RayHit))
-    //         {
-    //             RayHit.transform.gameObject.TryGetComponent<Interactable>(out var interactable);
-    //             if(interactable._InteractableType == InteractableType.INSPECTABLE)
-    //                 inspectObjectTransform = RayHit.transform;
-    //         }
-    //     }
 
-    //     deltaRotationX = -Input.GetAxis("Mouse X");
-    //     deltaRotationY = Input.GetAxis("Mouse Y");
+    void InteractWithObject() 
+    {
+        if(Input.GetKey(KeyCode.E)) 
+        {
+            if(objectGrabbed)
+                return;
 
-    //     if(Input.GetMouseButton(1)) 
-    //     {
-    //         if(inspectObjectTransform == null)
-    //             return; 
-                
-    //         inspectObjectTransform.rotation = 
-    //             Quaternion.AngleAxis(deltaRotationX * rotateSpeed, transform.up) * 
-    //             Quaternion.AngleAxis(deltaRotationY * rotateSpeed, transform.right) * 
-    //             inspectObjectTransform.rotation;
-    //     }
-    // }
+            objectGrabbed = true;
 
-    // private bool CameraToMouseRay(Vector3 mousePosition, out RaycastHit rayHit)
-    // {
-    //     Ray ray = camera.ScreenPointToRay(mousePosition);
+            transform.position = _PlayerContr.objectPos.transform.position;
+            transform.SetParent(_PlayerContr.objectPos.transform);
+        }
+    }
 
-    //     return Physics.Raycast(ray, out rayHit);
-    // }
-    
+    void Update() 
+    {
+        if(objectGrabbed && Input.GetKey(KeyCode.L)) // Release object
+        {
+            Rigidbody rb = transform.gameObject.AddComponent<Rigidbody>();
+            rb.useGravity = true;
+            rb.AddForce(transform.forward * forcePower, ForceMode.Impulse);
+        }   
+    }
 }

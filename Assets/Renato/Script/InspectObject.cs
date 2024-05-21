@@ -1,54 +1,86 @@
-using System;
 using UnityEngine;
 
 public class InspectObject : MonoBehaviour
 {
-    private new Camera camera;
-    [SerializeField] private GameObject player;
+    public new Camera camera;
+    public float rotateSpeed = 6f;
+    public float detectionRadius = 0.5f;  // Radius for the overlap sphere
 
-    [SerializeField] private Transform inspectObjectTransform;
-    [SerializeField] private float deltaRotationX;
-    [SerializeField] private float deltaRotationY;
+    private Transform inspectObjectTransform;
+    private float deltaRotationX;
+    private float deltaRotationY;
+    public bool ableToInspect;
 
-    [SerializeField] private float rotateSpeed = 2f;
+    private struct CustomRaycastHit
+    {
+        public Transform transform;
+        public Vector3 point;
+        public Vector3 normal;
+        public float distance;
+    }
 
     void Awake() 
     {
-        camera = GetComponent<Camera>();
-        // transform.SetParent(player.transform);
-        // transform.position = player.transform.position + new Vector3(0f, .5f, 0f);
+        camera = GetComponent<Camera>(); 
     }
 
-    void Update() 
+    void Update()
     {
-        if(Input.GetMouseButtonDown(0)) 
+        if(!ableToInspect)
+            return;
+             
+        if (Input.GetMouseButtonDown(0))
         {
-            if (CameraToMouseRay(Input.mousePosition, out RaycastHit RayHit))
+            if (CameraToMouseRay(Input.mousePosition, out CustomRaycastHit customRayHit))
             {
-                if (RayHit.transform.gameObject.CompareTag("Inspectable"))
-                    inspectObjectTransform = RayHit.transform;
+                if (customRayHit.transform.CompareTag("Inspectable"))
+                {
+                    inspectObjectTransform = customRayHit.transform;
+                    Debug.Log(customRayHit.transform.gameObject.name);
+                }
             }
         }
 
         deltaRotationX = -Input.GetAxis("Mouse X");
         deltaRotationY = Input.GetAxis("Mouse Y");
 
-        if(Input.GetMouseButton(1)) 
+        if (Input.GetMouseButton(1))
         {
-            if(inspectObjectTransform == null)
-                return; 
-                
-            inspectObjectTransform.rotation = 
-                Quaternion.AngleAxis(deltaRotationX * rotateSpeed, transform.up) * 
-                Quaternion.AngleAxis(deltaRotationY * rotateSpeed, transform.right) * 
+            if (inspectObjectTransform == null)
+                return;
+
+            inspectObjectTransform.rotation =
+                Quaternion.AngleAxis(deltaRotationX * rotateSpeed, transform.up) *
+                Quaternion.AngleAxis(deltaRotationY * rotateSpeed, transform.right) *
                 inspectObjectTransform.rotation;
         }
     }
 
-    private bool CameraToMouseRay(Vector3 mousePosition, out RaycastHit rayHit)
+    private bool CameraToMouseRay(Vector3 mousePosition, out CustomRaycastHit customRayHit)
     {
         Ray ray = camera.ScreenPointToRay(mousePosition);
+        Vector3 worldPoint = ray.GetPoint(1f);  // Get a point along the ray a short distance away from the camera
 
-        return Physics.Raycast(ray, out rayHit);
+        // Use OverlapSphere to detect colliders within a certain radius from the world point around the mouse position
+        Collider[] colliders = Physics.OverlapSphere(worldPoint, detectionRadius);
+        foreach (Collider collider in colliders)
+        {
+            if (collider.CompareTag("Inspectable"))
+            {
+                customRayHit = new CustomRaycastHit
+                {
+                    transform = collider.transform,
+                    point = collider.transform.position,
+                    normal = Vector3.zero, // Default normal
+                    distance = Vector3.Distance(worldPoint, collider.transform.position)
+                };
+                return true;
+            }
+        }
+
+        customRayHit = default;
+        return false;
     }
 }
+
+

@@ -1,12 +1,14 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     // Components
-    [Header("Components")]
+    [Header("Components & GameObjects")]
     [SerializeField] private CharacterController controller;
     [SerializeField] private Camera cam;
+    public GameObject objectPos;
 
     // Movement
     [Header("Movement Stuff")]
@@ -18,20 +20,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float bobbingAmount = 0.05f; 
     [SerializeField] private float bobbingSpeed = 10f; 
     public bool moving, idle = true, hasStepped;
-    public bool allowedToMove, ableToShake;
+    public bool allowedToMove, ableToShake, ableToLookAround;
 
     // Camera
     [Header("Camera Stuff")]
-    [SerializeField] private Vector3 initialCamPos;
+    [HideInInspector] public Vector3 initialCamPos;
     [SerializeField] private float cameraOffset = -.5f;
     [SerializeField] private float cameraSwayAmount = 0.1f;
     [SerializeField] private float cameraSwaySpeed = 2f; 
-    private bool shake;
+    [SerializeField] private bool shake;
 
     // Mouse look
     [Header("Mouse Look")]
     [SerializeField] private float mouseSensitivity = 100f;
     private float xRotation = 0f;
+    
+    [SerializeField] private bool cursorLocked;
 
     void Awake()
     {
@@ -39,16 +43,34 @@ public class PlayerController : MonoBehaviour
         cam = Camera.main;
         initialCamPos = new(cam.transform.localPosition.x, cam.transform.localPosition.y, cam.transform.localPosition.z);
         Cursor.lockState = CursorLockMode.Locked;
-
-        // Bool
+    
         allowedToMove = true;
         ableToShake = true;
+        ableToLookAround = true;
     }
 
     void Update()
     {
+        if(Input.GetKey(KeyCode.Escape) && Cursor.lockState == CursorLockMode.Locked) 
+            Cursor.lockState = CursorLockMode.None;
+        
+        else if(Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0) && Cursor.lockState == CursorLockMode.None) 
+            Cursor.lockState = CursorLockMode.Locked;
+
+
+        if(Cursor.lockState == CursorLockMode.Locked)
+            cursorLocked = true;
+
+        else if(Cursor.lockState == CursorLockMode.None)
+            cursorLocked = false;
+
+            
         CameraShake();
         MouseLook();
+
+        if(Input.GetKey(KeyCode.Space)) 
+            SceneManager.LoadScene("Scene_Renato");
+        
     }
 
     void FixedUpdate() 
@@ -58,15 +80,22 @@ public class PlayerController : MonoBehaviour
 
     void MouseLook()
     {
-        // Rotate the camera based on mouse movement
+        if(!ableToLookAround)
+            return;
+
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        cam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
+
+        if(Cursor.lockState == CursorLockMode.Locked) 
+        {
+            cam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            transform.Rotate(Vector3.up * mouseX);
+        }
+        
     }
 
     void Moving() 
@@ -85,15 +114,17 @@ public class PlayerController : MonoBehaviour
         float speed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed; 
 
         // Apply movement in world space
-        // Vector3 worldMoveDirection = transform.TransformDirection(moveDirection);
-        controller.Move(speed * Time.deltaTime * moveDirection);
+        Vector3 worldMoveDirection = transform.TransformDirection(moveDirection);
 
-        // Store the current camera position
+        controller.Move(speed * Time.deltaTime * worldMoveDirection);
+
+        // Store the current camera local position
         Vector3 currentCamPos = cam.transform.localPosition;
 
         if (controller.velocity.sqrMagnitude > 0.01f) // Check if the controller moved
         {
-            cam.transform.localPosition = initialCamPos; // Set the camera position to the initial position
+            // Set the camera position to the initial local position
+            cam.transform.localPosition = initialCamPos; 
 
             moving = true;
             idle = false;
@@ -124,6 +155,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             moving = false;
+            ableToShake = true;
             idle = true;
         }
     }

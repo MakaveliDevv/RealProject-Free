@@ -28,23 +28,6 @@ public class Interactable : MonoBehaviour
         // Do something
     }
 
-    // void OnCollisionEnter(Collision collision) 
-    // {
-    //     if(collision.gameObject.CompareTag("Player") && !inRange) 
-    //     {
-    //         inRange = true;
-    //         Interact();
-    //     }
-    // }
-
-    // void OnCollisionExit(Collision collision) 
-    // {
-    //     if(collision.gameObject.CompareTag("Player") && inRange) 
-    //     {
-    //         inRange = false;
-    //     }
-    // }
-
     void OnTriggerEnter(Collider collider) 
     {
         collider.TryGetComponent<PlayerController>(out var player);
@@ -54,33 +37,22 @@ public class Interactable : MonoBehaviour
             inRange = true;
             InteractOnCollision();
         }
-        // if(collider.CompareTag("Player") && !inRange) 
-        // {
-        //     inRange = true;
-        //     Interact();
-        // }
     }
 
     void OnTriggerExit(Collider collider) 
     {
         collider.TryGetComponent<PlayerController>(out var player);
         if(player != null && inRange)  
-        {
             inRange = false;
-        }
-        // if(collider.CompareTag("Player") && inRange) 
-        // {
-        //     inRange = false;
-        // }
+        
     }
 
     void OnTriggerStay(Collider collider) 
     {
         collider.TryGetComponent<PlayerController>(out var player);
         if(player != null && inRange)  
-        {
             Interact();
-        }
+        
     }
 
     void OnDrawGizmosSelect() 
