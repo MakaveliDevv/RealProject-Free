@@ -7,7 +7,6 @@ public class Inspectable : Interactable
     [SerializeField] private new Camera camera;
     private InspectObject _InspectObject;
     private Rigidbody rb;
-    // [SerializeField] private SphereCollider sphereCol;
 
     [SerializeField] private float rotateSpeed = 2f;
     [SerializeField] private bool inInspectMode;
@@ -23,33 +22,27 @@ public class Inspectable : Interactable
     {   
         camera = Camera.main;
         _InspectObject = camera.GetComponent<InspectObject>();
-        rb = GetComponent<Rigidbody>();
-        // sphereCol = GetComponentInChildren<SpheresCollider>();
     }
 
-    public override void Interact() 
-    {
-        base.Interact();
-
-        // Inspect();
-    }
+    // public override void Interact() 
+    // {
+    //     base.Interact();
+    // }
 
 
 
     public void Inspect() 
     {
+        // Inspect
+        if(_InspectObject.inspectMode)
+            return;
+
         // Check if player pressed the inspect button while grabbing
         if(_InteractableType == InteractableType.INSPECTABLE) 
         {   
-            // Inspect
-            if(_InspectObject.inspectMode)
-                return;
-
-            _InspectObject.inspectMode = true;
-
-            // Disable the sphere collider
+            _InspectObject.inspectMode = true;         
+            
             // sphereCol.enabled = false;
-
             camera.transform.localPosition = _PlayerContr.initialCamPos;
 
             // Freeze the camera on the current position

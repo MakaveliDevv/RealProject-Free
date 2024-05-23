@@ -6,9 +6,11 @@ public class Grabable : MonoBehaviour
 {
     public Interactable _Interactable;
     [SerializeField] private PlayerController _PlayerC;
+    [SerializeField] private SphereCollider sphereCol;
+    
     public bool inGrabRange;
-    public float grabRadius;
     [SerializeField] private bool objectPickedup;
+    public float grabRadius;
 
 
     void Awake() 
@@ -16,44 +18,53 @@ public class Grabable : MonoBehaviour
         _Interactable = GetComponentInParent<Interactable>();
         if (TryGetComponent<SphereCollider>(out var col))
         {
-            col.radius = grabRadius;
+            sphereCol = col;
+            sphereCol.radius = grabRadius;
         }
         else
         {
-            Debug.LogError("SphereCollider is missing.");
+            Debug.LogWarning("SphereCollider is missing.");
         }
     }
-    void Update() 
-    {
-        if (_Interactable != null && _Interactable.inRange) 
-        {
-            _PlayerC = _Interactable._PlayerContr; // Fetch the PlayerController script from the Interactable script
-            if (_PlayerC != null)
-            {
-                float distance = Vector3.Distance(transform.position, _PlayerC.transform.position);
-                if (distance <= grabRadius) 
-                {
-                    inGrabRange = true;
+    // void Update() 
+    // {
+    //     if (_Interactable != null && _Interactable.inRange && _PlayerC != null) 
+    //     {
+    //         _PlayerC = _Interactable._PlayerContr; // Fetch the PlayerController script from the Interactable script
+    //         float distance = Vector3.Distance(transform.position, _PlayerC.transform.position);
+    //         Debug.Log(distance);
 
-                    SphereCollider col = _PlayerC.gameObject.GetComponent<SphereCollider>();
-                    col.enabled = true;
-                    // Debug.Log("Object is within grab range.");
-                }
-                else
-                {
-                    SphereCollider col = _PlayerC.gameObject.GetComponent<SphereCollider>();
-                    col.enabled = false;
-                    inGrabRange = false;
-                    // Debug.Log("Object is out of grab range.");
-                }
-            }
-            // else
-            // {
-            //     Debug.LogWarning("PlayerController is null in Grabable.");
-            // }
-        }
-    }
+    //         if (distance <= grabRadius) 
+    //         {
+    //             inGrabRange = true;
+    //             sphereCol.enabled = true;
+    //             Debug.Log("Object is within grab range.");
+    //         }
+    //         else
+    //         {
+    //             sphereCol.enabled = false;
+    //             inGrabRange = false;
+    //             // Debug.Log("Object is out of grab range.");
+    //         }
+            
+    //         // else
+    //         // {
+    //         //     Debug.LogWarning("PlayerController is null in Grabable.");
+    //         // }
+    //     }
+    // }
     
+    void OnTriggerEnter(Collider collider)
+    {
+        inGrabRange = true;
+        Debug.Log("Object is within grab range.");
+        
+        if(collider.TryGetComponent<PlayerController>(out var controller))
+        {
+            _PlayerC = controller;
+        }         
+    }
+
     void OnTriggerExit(Collider collider) 
     {
         inGrabRange = false;
@@ -69,15 +80,28 @@ public class Grabable : MonoBehaviour
                 parent.transform.SetParent(_PlayerC.objectPos.transform);
                 parent.transform.position = _PlayerC.objectPos.transform.position;
 
+                // Disable colliders
+                sphereCol.enabled = false;
+                _Interactable.gameObject.GetComponent<SphereCollider>().enabled = false;
+
                 objectPickedup = true;
                 Debug.Log("Object picked up");
             } 
             else 
             {
+                sphereCol.enabled = true;
+                _Interactable.gameObject.GetComponent<SphereCollider>().enabled = true;
                 parent.transform.SetParent(null);
+                
                 objectPickedup = false;
                 Debug.Log("Object released");
             }
         }
+    }
+
+    void OnDrawGizmos() 
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(transform.position, grabRadius);
     }
 }

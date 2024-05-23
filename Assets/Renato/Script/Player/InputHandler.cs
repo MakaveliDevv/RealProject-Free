@@ -6,6 +6,9 @@ public class InputHandler : MonoBehaviour
     private PlayerController _Player;
     private PlayerInteraction _PlayerInteraction;
     [SerializeField] private InspectObject _InspectObject;
+    [SerializeField] private float smoothingFactor = 5f;
+
+
 
     void Awake() 
     {
@@ -13,6 +16,27 @@ public class InputHandler : MonoBehaviour
         _PlayerInteraction = GetComponent<PlayerInteraction>();
         _InspectObject = GetComponentInChildren<InspectObject>();
     }
+    
+    // private void Update()
+    // {
+        // currentInput = SmoothInput(targetInput);
+        // if (_InspectObject != null && currentInput != Vector2.zero)
+        // {
+        //     _InspectObject.RotateObject(currentInput);
+        // }
+
+        //  if (_InspectObject != null)
+        // {
+        //     currentInput = SmoothInput(targetInput);
+        //     if (currentInput != Vector2.zero)
+        //     {
+        //         _InspectObject.RotateObject(currentInput);
+        //     }
+        // }
+    // }
+
+
+
 
     public void MoveInput(InputAction.CallbackContext ctx) 
     {
@@ -64,6 +88,18 @@ public class InputHandler : MonoBehaviour
 
     public void RotateObjectInput(InputAction.CallbackContext ctx)
     {
+        if (_InspectObject != null)
+        {
+            if(ctx.performed) 
+                _InspectObject.SetInputRotateVector(ctx.ReadValue<Vector2>());
+            
+            else if (ctx.canceled)
+                _InspectObject.SetInputRotateVector(Vector2.zero); 
+        }
+
+    }
+}
+
         // if (_InspectObject != null)
         // {
         //     if (ctx.performed)
@@ -76,11 +112,3 @@ public class InputHandler : MonoBehaviour
         //         _InspectObject.RotateObject(Vector2.zero);
         //     }
         // }
-
-        if (_InspectObject != null && ctx.performed)
-        {
-            Vector2 input = ctx.ReadValue<Vector2>();
-            _InspectObject.RotateObject(input);
-        }
-    }
-}

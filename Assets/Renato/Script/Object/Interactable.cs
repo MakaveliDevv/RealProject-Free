@@ -17,13 +17,14 @@ public class Interactable : MonoBehaviour
     [SerializeField] private float interactRadius = 3f;
 
     private SphereCollider col;
-    // Bools
 
     void Awake() 
     {
-        col = GetComponent<SphereCollider>();
-        col.radius = interactRadius;
-        col.isTrigger = true;
+        if(TryGetComponent<SphereCollider>(out var col)) 
+        {
+            col.radius = interactRadius;
+            col.isTrigger = true;
+        }
     }
 
     public virtual void InteractOnCollision() 
@@ -85,10 +86,10 @@ public class Interactable : MonoBehaviour
 
     
 
-    void OnDrawGizmosSelect() 
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(transform.position, interactRadius);
-    }
+    // void OnDrawGizmosSelect() 
+    // {
+    //     Gizmos.color = Color.blue;
+    //     Gizmos.DrawSphere(transform.position, interactRadius);
+    // }
 
 }
