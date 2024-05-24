@@ -7,10 +7,15 @@ public class Grabable : MonoBehaviour
     public Interactable _Interactable;
     [SerializeField] private PlayerController _PlayerC;
     [SerializeField] private SphereCollider sphereCol;
+    [SerializeField] private Rigidbody rb;
     
     public bool inGrabRange;
-    [SerializeField] private bool objectPickedup;
+    public bool objectPickedup;
     public float grabRadius;
+
+    public LayerMask groundLayer;
+    public float smoothTime = 0.3f;
+    private Vector3 velocity = Vector3.zero;
 
 
     void Awake() 
@@ -26,41 +31,13 @@ public class Grabable : MonoBehaviour
             Debug.LogWarning("SphereCollider is missing.");
         }
     }
-    // void Update() 
-    // {
-    //     if (_Interactable != null && _Interactable.inRange && _PlayerC != null) 
-    //     {
-    //         _PlayerC = _Interactable._PlayerContr; // Fetch the PlayerController script from the Interactable script
-    //         float distance = Vector3.Distance(transform.position, _PlayerC.transform.position);
-    //         Debug.Log(distance);
-
-    //         if (distance <= grabRadius) 
-    //         {
-    //             inGrabRange = true;
-    //             sphereCol.enabled = true;
-    //             Debug.Log("Object is within grab range.");
-    //         }
-    //         else
-    //         {
-    //             sphereCol.enabled = false;
-    //             inGrabRange = false;
-    //             // Debug.Log("Object is out of grab range.");
-    //         }
-            
-    //         // else
-    //         // {
-    //         //     Debug.LogWarning("PlayerController is null in Grabable.");
-    //         // }
-    //     }
-    // }
     
     void OnTriggerEnter(Collider collider)
     {
-        inGrabRange = true;
-        Debug.Log("Object is within grab range.");
-        
         if(collider.TryGetComponent<PlayerController>(out var controller))
         {
+            inGrabRange = true;
+            Debug.Log("Player is within grab range.");
             _PlayerC = controller;
         }         
     }
@@ -72,33 +49,100 @@ public class Grabable : MonoBehaviour
 
     public void ToggleGrab()
     {
-        if(_PlayerC != null) 
+        Inspectable _Inspectable = _Interactable.GetComponent<Inspectable>();
+        // GameObject parent = _Interactable.gameObject; // Initialize main object
+        
+        if(_PlayerC != null && !_Inspectable._InspectObject.inspectMode) 
         {
-            GameObject parent = _Interactable.gameObject; // Initialize main object
             if (!objectPickedup) 
             {
-                parent.transform.SetParent(_PlayerC.objectPos.transform);
-                parent.transform.position = _PlayerC.objectPos.transform.position;
-
-                // Disable colliders
-                sphereCol.enabled = false;
-                _Interactable.gameObject.GetComponent<SphereCollider>().enabled = false;
-
-                objectPickedup = true;
-                Debug.Log("Object picked up");
+                Grab();
             } 
             else 
             {
-                sphereCol.enabled = true;
-                _Interactable.gameObject.GetComponent<SphereCollider>().enabled = true;
-                parent.transform.SetParent(null);
-                
-                objectPickedup = false;
-                Debug.Log("Object released");
+                Release();
             }
         }
     }
+    
+    public void Grab() 
+    {
+        _Interactable.gameObject.transform.SetParent(_PlayerC.objectPos.transform);
+        _Interactable.gameObject.transform.position = _PlayerC.objectPos.transform.position;
 
+        sphereCol.enabled = false;
+        _Interactable.gameObject.GetComponent<SphereCollider>().enabled = false;
+
+        if(rb != null) 
+            Destroy(rb);
+        
+        objectPickedup = true;
+        Debug.Log("Object picked up");
+    }
+
+    public void Release() 
+    {
+        sphereCol.enabled = true;
+        _Interactable.gameObject.GetComponent<SphereCollider>().enabled = true;
+        _Interactable.gameObject.transform.SetParent(null);
+        rb = _Interactable.gameObject.AddComponent<Rigidbody>();
+
+        // Check if its a floating object or not
+        if(_Interactable._GravitationalType != Interactable.GravitationalType.NON_FLOATING) 
+        {
+            // If floating then float
+            rb.useGravity = false;
+        }
+
+        // Start the coroutine to drop the object smoothly
+        StartCoroutine(SmoothDrop());
+
+        
+        objectPickedup = false;
+        Debug.Log("Object released");
+    }
+
+    private IEnumerator SmoothDrop()
+    {
+        Vector3 targetPosition = CalculateGroundPosition();
+        float distanceToGround = Vector3.Distance(_Interactable.transform.position, targetPosition);
+
+        // While the object is not close to the ground
+        while (distanceToGround > 0.1f)
+        {
+            // Smoothly move the object towards the ground
+            _Interactable.transform.position = Vector3.SmoothDamp(
+                _Interactable.transform.position, 
+                targetPosition, 
+                ref velocity, 
+                smoothTime
+            );
+
+            // Update the distance to the ground
+            distanceToGround = Vector3.Distance(_Interactable.transform.position, targetPosition);
+
+            yield return null;
+        }
+
+        // Once close to the ground, enable gravity if needed
+        // if (_Interactable._GravitationalType != Interactable.GravitationalType.NON_FLOATING)
+        // {
+        //     rb.useGravity = true;
+        // }
+    }
+
+    
+    private Vector3 CalculateGroundPosition()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(_Interactable.transform.position, Vector3.down, out hit, Mathf.Infinity, groundLayer))
+        {
+            return hit.point;
+        }
+
+        return _Interactable.transform.position;
+    }
+    
     void OnDrawGizmos() 
     {
         Gizmos.color = Color.blue;

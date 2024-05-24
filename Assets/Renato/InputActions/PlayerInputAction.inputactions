@@ -49,6 +49,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Relase Action",
+                    "type": "Button",
+                    "id": "9b1933df-be31-4168-b526-07d79e5f4537",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -199,7 +208,7 @@
                     "name": "",
                     "id": "0a3512ca-261b-49eb-b633-f82d53073c5d",
                     "path": "<Gamepad>/buttonNorth",
-                    "interactions": "Hold",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Inspect Action",
@@ -260,6 +269,17 @@
                     "action": "Rotate Input",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "d96f128f-fd4b-4d21-af52-3f9a3f18e615",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Relase Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

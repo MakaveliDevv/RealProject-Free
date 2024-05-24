@@ -5,13 +5,9 @@ using UnityEngine;
 public class Inspectable : Interactable
 {
     [SerializeField] private new Camera camera;
-    private InspectObject _InspectObject;
-    private Rigidbody rb;
-
-    [SerializeField] private float rotateSpeed = 2f;
-    [SerializeField] private bool inInspectMode;
-    [SerializeField] private float forcePower = 2.5f;
-
+    public InspectObject _InspectObject;
+    public bool releaseAfterInspect;
+    public bool grabAfterInspect;
 
     // Additional variables to freeze the camera
     private Vector3 frozenCameraPosition;
@@ -23,13 +19,6 @@ public class Inspectable : Interactable
         camera = Camera.main;
         _InspectObject = camera.GetComponent<InspectObject>();
     }
-
-    // public override void Interact() 
-    // {
-    //     base.Interact();
-    // }
-
-
 
     public void Inspect() 
     {
@@ -83,5 +72,35 @@ public class Inspectable : Interactable
         // }
 
         // Or if the player choose to grab it again
+    }
+
+    public void AfterInspectInput() 
+    {
+        Grabable _Grabable = GetComponentInChildren<Grabable>();
+        if(releaseAfterInspect) 
+        {
+            _Grabable.Release();
+        }
+        else if(grabAfterInspect) 
+        {
+            _Grabable.Grab();
+        }
+        
+
+        // Check if grab button is pressed
+        // if(_InspectObject.inspectMode) 
+        // {
+        //     sphereCol.enabled = true;
+        //     _Interactable.gameObject.GetComponent<SphereCollider>().enabled = true;
+        //     parent.transform.SetParent(null);
+            
+        //     objectPickedup = false;
+        //     Debug.Log("Object released");
+            
+        //     // Then drop the object if its not a float object
+
+
+        //     // If its a float object, keep floating
+        // }
     }
 }

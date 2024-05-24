@@ -17,27 +17,6 @@ public class InputHandler : MonoBehaviour
         _InspectObject = GetComponentInChildren<InspectObject>();
     }
     
-    // private void Update()
-    // {
-        // currentInput = SmoothInput(targetInput);
-        // if (_InspectObject != null && currentInput != Vector2.zero)
-        // {
-        //     _InspectObject.RotateObject(currentInput);
-        // }
-
-        //  if (_InspectObject != null)
-        // {
-        //     currentInput = SmoothInput(targetInput);
-        //     if (currentInput != Vector2.zero)
-        //     {
-        //         _InspectObject.RotateObject(currentInput);
-        //     }
-        // }
-    // }
-
-
-
-
     public void MoveInput(InputAction.CallbackContext ctx) 
     {
         if(_Player != null) 
@@ -71,10 +50,6 @@ public class InputHandler : MonoBehaviour
                 _PlayerInteraction._Grabable.ToggleGrab();
             }
         }
-        // else
-        // {
-        //     Debug.LogWarning("PlayerInteraction or Grabable is null.");
-        // }
     }
 
     public void InspectInput(InputAction.CallbackContext ctx) 
@@ -98,17 +73,32 @@ public class InputHandler : MonoBehaviour
         }
 
     }
-}
 
-        // if (_InspectObject != null)
-        // {
-        //     if (ctx.performed)
-        //     {
-        //         _InspectObject.RotateObject(ctx.ReadValue<Vector2>());
-        //     }
-        //     else if (ctx.canceled)
-        //     {
-        //         // Handle cancellation if needed
-        //         _InspectObject.RotateObject(Vector2.zero);
-        //     }
-        // }
+    public void ReleaseAfterInspect(InputAction.CallbackContext ctx) 
+    {
+        // This is meant for when in inspect mode
+        if(_InspectObject.inspectMode && ctx.performed) 
+        {
+            if(_InspectObject.inspectObjectTransform.TryGetComponent<Inspectable>(out var _Inspectable)) 
+            {
+                _Inspectable.releaseAfterInspect = true;
+                _Inspectable.AfterInspectInput();
+                Debug.Log("Object released from inspect mode");
+            } 
+        }
+    }
+
+    public void GrabAfterInspect(InputAction.CallbackContext ctx) 
+    {
+        // This is meant for when in inspect mode
+        if(_InspectObject.inspectMode && ctx.performed) 
+        {
+            if(_InspectObject.inspectObjectTransform.TryGetComponent<Inspectable>(out var _Inspectable)) 
+            {
+                _Inspectable.grabAfterInspect = true;
+                _Inspectable.AfterInspectInput();
+                Debug.Log("Object grabbed from inspect mode");
+            } 
+        }
+    }
+}

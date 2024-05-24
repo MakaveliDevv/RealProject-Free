@@ -46,14 +46,6 @@ public class Interactable : MonoBehaviour
             inRange = true;
             InteractOnCollision();
         }
-        // else if (_PlayerContr == null)
-        // {
-        //     Debug.LogWarning("PlayerController not found on collider.");
-        // }
-        // else
-        // {
-        //     Debug.LogWarning("Already in range.");
-        // }
     }
 
     void OnTriggerExit(Collider collider) 

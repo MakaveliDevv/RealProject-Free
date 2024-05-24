@@ -71,6 +71,15 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Relase Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""9b1933df-be31-4168-b526-07d79e5f4537"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -221,7 +230,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""0a3512ca-261b-49eb-b633-f82d53073c5d"",
                     ""path"": ""<Gamepad>/buttonNorth"",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Inspect Action"",
@@ -282,6 +291,17 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""Rotate Input"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d96f128f-fd4b-4d21-af52-3f9a3f18e615"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Relase Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -295,6 +315,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_InputAction_PickupAction = m_InputAction.FindAction("Pickup Action", throwIfNotFound: true);
         m_InputAction_InspectAction = m_InputAction.FindAction("Inspect Action", throwIfNotFound: true);
         m_InputAction_RotateInput = m_InputAction.FindAction("Rotate Input", throwIfNotFound: true);
+        m_InputAction_RelaseAction = m_InputAction.FindAction("Relase Action", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -361,6 +382,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_InputAction_PickupAction;
     private readonly InputAction m_InputAction_InspectAction;
     private readonly InputAction m_InputAction_RotateInput;
+    private readonly InputAction m_InputAction_RelaseAction;
     public struct InputActionActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -370,6 +392,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         public InputAction @PickupAction => m_Wrapper.m_InputAction_PickupAction;
         public InputAction @InspectAction => m_Wrapper.m_InputAction_InspectAction;
         public InputAction @RotateInput => m_Wrapper.m_InputAction_RotateInput;
+        public InputAction @RelaseAction => m_Wrapper.m_InputAction_RelaseAction;
         public InputActionMap Get() { return m_Wrapper.m_InputAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -394,6 +417,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @RotateInput.started += instance.OnRotateInput;
             @RotateInput.performed += instance.OnRotateInput;
             @RotateInput.canceled += instance.OnRotateInput;
+            @RelaseAction.started += instance.OnRelaseAction;
+            @RelaseAction.performed += instance.OnRelaseAction;
+            @RelaseAction.canceled += instance.OnRelaseAction;
         }
 
         private void UnregisterCallbacks(IInputActionActions instance)
@@ -413,6 +439,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @RotateInput.started -= instance.OnRotateInput;
             @RotateInput.performed -= instance.OnRotateInput;
             @RotateInput.canceled -= instance.OnRotateInput;
+            @RelaseAction.started -= instance.OnRelaseAction;
+            @RelaseAction.performed -= instance.OnRelaseAction;
+            @RelaseAction.canceled -= instance.OnRelaseAction;
         }
 
         public void RemoveCallbacks(IInputActionActions instance)
@@ -437,5 +466,6 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         void OnPickupAction(InputAction.CallbackContext context);
         void OnInspectAction(InputAction.CallbackContext context);
         void OnRotateInput(InputAction.CallbackContext context);
+        void OnRelaseAction(InputAction.CallbackContext context);
     }
 }

@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     public Vector3 inputDirection;
     public float walkSpeed = 3f; 
     public float sprintSpeed = 6f;
+    public float veticalVelocity;
+    public float gravityForce;
     [SerializeField] private float stepDistance = 1f;
     private float accumulated_distance;
     private int stepAmount; 
@@ -69,18 +71,24 @@ public class PlayerController : MonoBehaviour
             cursorLocked = false;
 
             
-        CameraShake();
-        MouseLook();
+        // CameraShake();
+        // MouseLook();
 
         if(Input.GetKey(KeyCode.Space)) 
             SceneManager.LoadScene("Scene_Renato");
-    }
 
+        ApplyGravity();
+            
+    }
 
     void FixedUpdate() 
     {
+        ApplyGravity();
+        CameraShake();
+        MouseLook();
         Moving();
     }
+    
     public void SetInputVectorMovement(Vector3 direction)
     {
         inputVector = direction;
@@ -134,12 +142,12 @@ public class PlayerController : MonoBehaviour
         controller.Move(speed * Time.deltaTime * worldMoveDirection);
 
         // Store the current camera local position
-        Vector3 currentCamPos = cam.transform.localPosition;
+        // Vector3 currentCamPos = cam.transform.localPosition;
 
         if (controller.velocity.sqrMagnitude > 0.01f) // Check if the controller moved
         {
             // Set the camera position to the initial local position
-            cam.transform.localPosition = initialCamPos; 
+            // cam.transform.localPosition = initialCamPos; 
 
             moving = true;
             idle = false;
@@ -157,14 +165,14 @@ public class PlayerController : MonoBehaviour
                     hasStepped = true;
 
                     // Head bob
-                    StartCoroutine(HeadBobbing(currentCamPos, cam)); 
+                    StartCoroutine(HeadBobbing(initialCamPos, cam)); 
                 }
 
                 // Reset accumulated distance
                 accumulated_distance = 0f;
 
                 // Reset the camera position
-                cam.transform.localPosition = currentCamPos;           
+                // cam.transform.localPosition = currentCamPos;           
             }
         } 
         else
@@ -206,7 +214,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void CameraShake() 
+    private void CameraShake() 
     {
         // if(!ableToShake)
         //     return;
@@ -227,6 +235,14 @@ public class PlayerController : MonoBehaviour
             cam.transform.localPosition = cameraSway;
             shake = true;
         }
+    }
+
+    private void ApplyGravity() 
+    {
+        veticalVelocity -= gravityForce * Time.deltaTime;
+
+        inputDirection.y = veticalVelocity * Time.deltaTime;
+
     }
 }
 
