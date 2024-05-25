@@ -14,9 +14,9 @@ public class Interactable : MonoBehaviour
 
     public PlayerController _PlayerContr;
     public bool inRange;
+
     [SerializeField] private float interactRadius = 3f;
 
-    private SphereCollider col;
 
     void Awake() 
     {
@@ -50,9 +50,10 @@ public class Interactable : MonoBehaviour
 
     void OnTriggerExit(Collider collider) 
     {
-        if(_PlayerContr != null && inRange)  
+        if(_PlayerContr != null && inRange)
+        {
             inRange = false;
-        
+        }  
     }
 
     void OnTriggerStay(Collider collider) 
@@ -61,27 +62,4 @@ public class Interactable : MonoBehaviour
             Interact();
         
     }
-
-
-    // If the object is an inspectable type
-    
-
-    // What happends when inspect is done?
-
-    // Either choose to grab the object again
-    // Or to release it
-
-    // If grab was the option
-    // Then check if the object is an grabable object, then grab
-    // If not then show, that this object is ungrabable
-    
-
-    
-
-    // void OnDrawGizmosSelect() 
-    // {
-    //     Gizmos.color = Color.blue;
-    //     Gizmos.DrawSphere(transform.position, interactRadius);
-    // }
-
 }

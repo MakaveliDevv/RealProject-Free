@@ -7,6 +7,8 @@ TagManager:
   - Inspectable
   - Interactable
   - Grabable
+  - DefualtCollider
+  - Interactable2
   layers:
   - Default
   - TransparentFX

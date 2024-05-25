@@ -6,7 +6,6 @@ public class InputHandler : MonoBehaviour
     private PlayerController _Player;
     private PlayerInteraction _PlayerInteraction;
     [SerializeField] private InspectObject _InspectObject;
-    [SerializeField] private float smoothingFactor = 5f;
 
 
 
@@ -56,14 +55,19 @@ public class InputHandler : MonoBehaviour
     {
         if(ctx.performed) 
         {
-            // Inspect
-            _PlayerInteraction._Inspectable.Inspect();
+            // if able to inspect
+            if(_PlayerInteraction.ableToInspect)
+            {
+                _InspectObject.inspectMode = true;
+                Inspectable _Inspectabple = _PlayerInteraction._Interactable.GetComponent<Inspectable>();
+                _Inspectabple.Inspect();
+            }
         }
     }
 
     public void RotateObjectInput(InputAction.CallbackContext ctx)
     {
-        if (_InspectObject != null)
+        if (_InspectObject != null && _InspectObject.inspectMode)
         {
             if(ctx.performed) 
                 _InspectObject.SetInputRotateVector(ctx.ReadValue<Vector2>());
@@ -99,6 +103,15 @@ public class InputHandler : MonoBehaviour
                 _Inspectable.AfterInspectInput();
                 Debug.Log("Object grabbed from inspect mode");
             } 
+        }
+    }
+
+    public void JumpInput(InputAction.CallbackContext ctx) 
+    {
+        if(_Player != null && !_Player.jumping) 
+        {   
+            Debug.Log(ctx.performed);
+            _Player.Jump();
         }
     }
 }

@@ -9,30 +9,36 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private CharacterController controller;
     [SerializeField] private Camera cam;
     public GameObject objectPos;
+    public InspectObject _InspectObject;
 
     // Movement
     [Header("Movement Stuff")]
-    public Vector3 inputVector;
-    public Vector3 inputDirection;
     public float walkSpeed = 3f; 
     public float sprintSpeed = 6f;
-    public float veticalVelocity;
-    public float gravityForce;
+    public float jumpForce = 3.5f;
+    public float gravityForce = 9.81f;
+    
+    public Vector3 inputVector;
+    public Vector3 inputDirection;
+    public float verticalVelocity;
+    public bool jumping;
+
     [SerializeField] private float stepDistance = 1f;
     private float accumulated_distance;
     private int stepAmount; 
     [SerializeField] private float bobbingAmount = 0.05f; 
     [SerializeField] private float bobbingSpeed = 10f; 
     public bool moving, idle = true, hasStepped;
-    public bool allowedToMove, ableToShake, ableToLookAround;
+    // public bool allowedToMove, ableToShake; 
+    public bool ableToLookAround;
 
     // Camera
     [Header("Camera Stuff")]
-    [HideInInspector] public Vector3 initialCamPos;
+    public Vector3 initialCamPos;
     [SerializeField] private float cameraOffset = -.5f;
     [SerializeField] private float cameraSwayAmount = 0.1f;
     [SerializeField] private float cameraSwaySpeed = 2f; 
-    [SerializeField] private bool shake;
+    public bool shake;
 
     // Mouse look
     [Header("Mouse Look")]
@@ -42,16 +48,20 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private bool cursorLocked;
     public float sphereRadius = 1.5f;
+  
 
     void Awake()
     {
-        controller = GetComponent<CharacterController>();
         cam = Camera.main;
+
+        controller = GetComponent<CharacterController>();
+        _InspectObject = cam.gameObject.GetComponent<InspectObject>();
+
         initialCamPos = new(cam.transform.localPosition.x, cam.transform.localPosition.y, cam.transform.localPosition.z);
         Cursor.lockState = CursorLockMode.Locked;
     
-        allowedToMove = true;
-        ableToShake = true;
+        // allowedToMove = true;
+        // ableToShake = true;
         ableToLookAround = true;
     }
 
@@ -70,23 +80,20 @@ public class PlayerController : MonoBehaviour
         else if(Cursor.lockState == CursorLockMode.None)
             cursorLocked = false;
 
-            
-        // CameraShake();
-        // MouseLook();
 
         if(Input.GetKey(KeyCode.Space)) 
             SceneManager.LoadScene("Scene_Renato");
-
-        ApplyGravity();
             
     }
 
     void FixedUpdate() 
     {
-        ApplyGravity();
         CameraShake();
-        MouseLook();
-        Moving();
+        if(!_InspectObject.inspectMode) 
+        {
+            MouseLook();
+            Moving();
+        }
     }
     
     public void SetInputVectorMovement(Vector3 direction)
@@ -101,12 +108,6 @@ public class PlayerController : MonoBehaviour
 
     void MouseLook()
     {
-        // if(!ableToLookAround)
-        //     return;
-        cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
-        if(inspectObject.inspectMode)
-            return;
-
         float mouseX = inputLookVector.x * mouseSensitivity * Time.deltaTime;
         float mouseY = inputLookVector.y * mouseSensitivity * Time.deltaTime;
 
@@ -118,74 +119,60 @@ public class PlayerController : MonoBehaviour
         {
             cam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             transform.Rotate(Vector3.up * mouseX);
+            ableToLookAround = true;
         }
         
     }
 
-    void Moving() 
+    void Moving()
     {
-        // if(!allowedToMove) 
-        //     return;
-        cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
-        if(inspectObject.inspectMode)
-            return;
+        ApplyGravity();
 
-        inputDirection = new(inputVector.x, 0, inputVector.z);
+        inputDirection = new Vector3(inputVector.x, 0f, inputVector.z);
         Vector3 moveDirection = new Vector3(inputDirection.x, 0f, inputDirection.z).normalized;
 
-        // Apply weighted movement
-        float speed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed; 
-
-        // Apply movement in world space
+        float speed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed;
         Vector3 worldMoveDirection = transform.TransformDirection(moveDirection);
+        Vector3 finalMoveDirection = worldMoveDirection + new Vector3(0, verticalVelocity, 0);
 
-        controller.Move(speed * Time.deltaTime * worldMoveDirection);
+        controller.Move(speed * Time.deltaTime * finalMoveDirection);
 
-        // Store the current camera local position
-        // Vector3 currentCamPos = cam.transform.localPosition;
+        Vector3 currentCamPos = cam.transform.localPosition;
 
-        if (controller.velocity.sqrMagnitude > 0.01f) // Check if the controller moved
+        if (controller.velocity.sqrMagnitude > 0.01f)
         {
-            // Set the camera position to the initial local position
-            // cam.transform.localPosition = initialCamPos; 
+            cam.transform.localPosition = initialCamPos;
 
-            moving = true;
-            idle = false;
-            ableToShake = false;
-            shake = false;
-
-            accumulated_distance += controller.velocity.magnitude * Time.deltaTime; // The amount of increased velocity
-            if (accumulated_distance > stepDistance) 
+            accumulated_distance += controller.velocity.magnitude * Time.deltaTime;
+            if (accumulated_distance > stepDistance)
             {
-                float previousStepAmount = stepAmount; // Store the previous step for reference
-                stepAmount += 1; // Increase the step amount
+                float previousStepAmount = stepAmount;
+                stepAmount += 1;
 
-                if (stepAmount >= previousStepAmount) // If true, the player made a step
+                if (stepAmount >= previousStepAmount)
                 {
-                    hasStepped = true;
+                    idle = false;
+                    shake = false;
+                    moving = true;
 
-                    // Head bob
-                    StartCoroutine(HeadBobbing(initialCamPos, cam)); 
+                    StartCoroutine(HeadBobbing(initialCamPos, cam));
                 }
 
-                // Reset accumulated distance
                 accumulated_distance = 0f;
-
-                // Reset the camera position
-                // cam.transform.localPosition = currentCamPos;           
+                cam.transform.localPosition = currentCamPos;
             }
-        } 
+        }
         else
         {
             moving = false;
-            ableToShake = true;
+            shake = true;
             idle = true;
         }
     }
 
     private IEnumerator HeadBobbing(Vector3 currentCamPos, Camera cam)
     {
-        if (moving && hasStepped)
+        if (moving)
         {
             // Define target positions
             Vector3 targetUpPosition = currentCamPos + new Vector3(0f, bobbingAmount, 0f);
@@ -216,18 +203,13 @@ public class PlayerController : MonoBehaviour
 
     private void CameraShake() 
     {
-        // if(!ableToShake)
-        //     return;
-
         cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
         if(inspectObject.inspectMode)
             return;
 
         // Shake camera
         if (idle) 
-        {
-            ableToShake = true;
-            
+        {            
             float swayOffsetX = Mathf.Sin(Time.time * cameraSwaySpeed) * cameraSwayAmount;
             float swayOffsetY = Mathf.Cos(Time.time * cameraSwaySpeed * 0.5f) * cameraSwayAmount + (transform.position.y + cameraOffset);
 
@@ -237,12 +219,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void ApplyGravity() 
+    public void Jump() 
     {
-        veticalVelocity -= gravityForce * Time.deltaTime;
+        if(controller.isGrounded) 
+        {
+            verticalVelocity = jumpForce;
+            jumping = true;
+        }
+    }
 
-        inputDirection.y = veticalVelocity * Time.deltaTime;
-
+    private void ApplyGravity()
+    {
+        if (controller.isGrounded && verticalVelocity <= 0)
+        {
+            verticalVelocity = -gravityForce * Time.deltaTime;
+            jumping = false;
+        }
+        else
+        {
+            verticalVelocity -= gravityForce * Time.deltaTime;
+        }
     }
 }
 

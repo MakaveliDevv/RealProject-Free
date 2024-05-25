@@ -80,6 +80,15 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""ba23cb17-5141-4a69-8801-5fa45b6cc5bf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -302,6 +311,17 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""Relase Action"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""69cb7d1d-e0bb-4c88-a929-367d399ff768"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -316,6 +336,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_InputAction_InspectAction = m_InputAction.FindAction("Inspect Action", throwIfNotFound: true);
         m_InputAction_RotateInput = m_InputAction.FindAction("Rotate Input", throwIfNotFound: true);
         m_InputAction_RelaseAction = m_InputAction.FindAction("Relase Action", throwIfNotFound: true);
+        m_InputAction_JumpAction = m_InputAction.FindAction("Jump Action", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -383,6 +404,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_InputAction_InspectAction;
     private readonly InputAction m_InputAction_RotateInput;
     private readonly InputAction m_InputAction_RelaseAction;
+    private readonly InputAction m_InputAction_JumpAction;
     public struct InputActionActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -393,6 +415,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         public InputAction @InspectAction => m_Wrapper.m_InputAction_InspectAction;
         public InputAction @RotateInput => m_Wrapper.m_InputAction_RotateInput;
         public InputAction @RelaseAction => m_Wrapper.m_InputAction_RelaseAction;
+        public InputAction @JumpAction => m_Wrapper.m_InputAction_JumpAction;
         public InputActionMap Get() { return m_Wrapper.m_InputAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -420,6 +443,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @RelaseAction.started += instance.OnRelaseAction;
             @RelaseAction.performed += instance.OnRelaseAction;
             @RelaseAction.canceled += instance.OnRelaseAction;
+            @JumpAction.started += instance.OnJumpAction;
+            @JumpAction.performed += instance.OnJumpAction;
+            @JumpAction.canceled += instance.OnJumpAction;
         }
 
         private void UnregisterCallbacks(IInputActionActions instance)
@@ -442,6 +468,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @RelaseAction.started -= instance.OnRelaseAction;
             @RelaseAction.performed -= instance.OnRelaseAction;
             @RelaseAction.canceled -= instance.OnRelaseAction;
+            @JumpAction.started -= instance.OnJumpAction;
+            @JumpAction.performed -= instance.OnJumpAction;
+            @JumpAction.canceled -= instance.OnJumpAction;
         }
 
         public void RemoveCallbacks(IInputActionActions instance)
@@ -467,5 +496,6 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         void OnInspectAction(InputAction.CallbackContext context);
         void OnRotateInput(InputAction.CallbackContext context);
         void OnRelaseAction(InputAction.CallbackContext context);
+        void OnJumpAction(InputAction.CallbackContext context);
     }
 }

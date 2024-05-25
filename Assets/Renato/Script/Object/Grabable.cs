@@ -6,7 +6,8 @@ public class Grabable : MonoBehaviour
 {
     public Interactable _Interactable;
     [SerializeField] private PlayerController _PlayerC;
-    [SerializeField] private SphereCollider sphereCol;
+    private Moveable _Moveable;
+    public SphereCollider sphereCol;
     [SerializeField] private Rigidbody rb;
     
     public bool inGrabRange;
@@ -21,6 +22,8 @@ public class Grabable : MonoBehaviour
     void Awake() 
     {
         _Interactable = GetComponentInParent<Interactable>();
+        _Moveable = GetComponent<Moveable>();
+        rb = GetComponentInParent<Rigidbody>();
         if (TryGetComponent<SphereCollider>(out var col))
         {
             sphereCol = col;
@@ -50,7 +53,6 @@ public class Grabable : MonoBehaviour
     public void ToggleGrab()
     {
         Inspectable _Inspectable = _Interactable.GetComponent<Inspectable>();
-        // GameObject parent = _Interactable.gameObject; // Initialize main object
         
         if(_PlayerC != null && !_Inspectable._InspectObject.inspectMode) 
         {
@@ -67,39 +69,44 @@ public class Grabable : MonoBehaviour
     
     public void Grab() 
     {
-        _Interactable.gameObject.transform.SetParent(_PlayerC.objectPos.transform);
-        _Interactable.gameObject.transform.position = _PlayerC.objectPos.transform.position;
+        // if(!_Moveable.objectMoving)
+        // {
+            _Interactable.gameObject.transform.SetParent(_PlayerC.objectPos.transform);
+            _Interactable.gameObject.transform.SetPositionAndRotation(_PlayerC.objectPos.transform.position, _PlayerC.objectPos.transform.rotation);
+            sphereCol.enabled = false;
+            _Interactable.gameObject.GetComponent<SphereCollider>().enabled = false;
 
-        sphereCol.enabled = false;
-        _Interactable.gameObject.GetComponent<SphereCollider>().enabled = false;
-
-        if(rb != null) 
-            Destroy(rb);
-        
-        objectPickedup = true;
-        Debug.Log("Object picked up");
+            if(rb != null) 
+                Destroy(rb);
+            
+            objectPickedup = true;
+            Debug.Log("Object picked up");
+        // } 
     }
 
     public void Release() 
     {
-        sphereCol.enabled = true;
-        _Interactable.gameObject.GetComponent<SphereCollider>().enabled = true;
-        _Interactable.gameObject.transform.SetParent(null);
-        rb = _Interactable.gameObject.AddComponent<Rigidbody>();
-
-        // Check if its a floating object or not
-        if(_Interactable._GravitationalType != Interactable.GravitationalType.NON_FLOATING) 
+        if(objectPickedup)
         {
-            // If floating then float
-            rb.useGravity = false;
-        }
+            sphereCol.enabled = true;
+            _Interactable.gameObject.GetComponent<SphereCollider>().enabled = true;
+            _Interactable.gameObject.transform.SetParent(null);
+            rb = _Interactable.gameObject.AddComponent<Rigidbody>();
 
-        // Start the coroutine to drop the object smoothly
-        StartCoroutine(SmoothDrop());
+            // Check if its a floating object or not
+            if(_Interactable._GravitationalType != Interactable.GravitationalType.NON_FLOATING) 
+                rb.useGravity = false;
+            
+            else 
+                rb.useGravity = true;
 
-        
-        objectPickedup = false;
-        Debug.Log("Object released");
+            // Start the coroutine to drop the object smoothly
+            StartCoroutine(SmoothDrop());
+
+            
+            objectPickedup = false;
+            Debug.Log("Object released");
+        } 
     }
 
     private IEnumerator SmoothDrop()
