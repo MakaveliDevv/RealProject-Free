@@ -1,0 +1,4 @@
+1. Need to stop the orb when it reaches the start point again
+2. colliders must be turned on
+3. when a second orb collides with the first one, stop the orbs movement and so on
+4. Stop the player's movement when the orb is moving
