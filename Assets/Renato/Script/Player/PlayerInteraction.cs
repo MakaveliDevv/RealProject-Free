@@ -6,26 +6,40 @@ public class PlayerInteraction : MonoBehaviour
 {
     public Grabable _Grabable; // Reference to the grabable object
     public Interactable _Interactable; // Reference to the inspect object
-    public bool ableToInspect;
+    public InspectObject _InspectObject;
 
-
-    void OnTriggerStay(Collider collider) 
+    void Awake()
     {
-        if(collider.TryGetComponent<Interactable>(out var interactable) && interactable._InteractableType == Interactable.InteractableType.INSPECTABLE) 
-        {
-            _Interactable = interactable;
-            ableToInspect = true;
-        }
+        _InspectObject = GetComponentInChildren<InspectObject>();
+    } 
 
-        collider.TryGetComponent<Grabable>(out var grabable);
-        if (grabable != null) 
+    void Update() 
+    {
+        if(Inventory.instance._Grabables.Count <= 0) 
         {
-            _Grabable = grabable;
+            // If object hit
+            if(_InspectObject.objectHit)
+            {
+                GameObject hitObj = _InspectObject.hitInfo.transform.gameObject;
+                if(hitObj.TryGetComponent<Interactable>(out var interactable))
+                {
+                    if(!interactable.objectPickedup) 
+                    {
+                        _Interactable = interactable;
+                        _Interactable.ableToInspect = true;
+                    }
+                }
+
+                // If grabable fetch the script
+                if (_Interactable._ObjectType == Interactable.ObjectType.GRABABLE)
+                    _Grabable = _Interactable.gameObject.GetComponentInChildren<Grabable>();
+            }
         }
     }
 
     void OnTriggerExit(Collider collider)
     {
-        ableToInspect = false;
+        if(_Interactable != null)
+            _Interactable.ableToInspect = false;
     }
 }

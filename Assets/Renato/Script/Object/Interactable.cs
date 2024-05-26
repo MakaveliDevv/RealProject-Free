@@ -13,53 +13,60 @@ public class Interactable : MonoBehaviour
     public GravitationalType _GravitationalType;
 
     public PlayerController _PlayerContr;
-    public bool inRange;
+    public InspectObject _InspectObject;
+    public bool playerInRange;
 
-    [SerializeField] private float interactRadius = 3f;
+    [SerializeField] protected float interactRadius = 3f;
+    public bool objectPickedup;
+    public bool objectReleased;
+    public bool ableToInspect;
 
 
-    void Awake() 
-    {
-        if(TryGetComponent<SphereCollider>(out var col)) 
+    void Awake()
+    {       
+        _InspectObject = InspectObject.instance;
+        if (TryGetComponent<SphereCollider>(out var col))
         {
             col.radius = interactRadius;
             col.isTrigger = true;
         }
     }
 
-    public virtual void InteractOnCollision() 
+    void Update()
     {
-        Debug.Log("Interact on collision");
-    }
-
-    public virtual void Interact() 
-    {        
-        Debug.Log("You can now interact with me");
-    }
-
-    void OnTriggerEnter(Collider collider) 
-    {
-        var playerController = collider.GetComponent<PlayerController>();
-        if (playerController != null && !inRange) 
+        if(!objectPickedup) 
         {
-            _PlayerContr = playerController;
-            inRange = true;
-            InteractOnCollision();
+            if (_InspectObject.CameraToMouseRay())
+            {
+                if (_InspectObject.rayExists)
+                {
+                    if (_InspectObject.hitInfo.transform.CompareTag("Interactable"))
+                    {
+                        _InspectObject.inspectObject = _InspectObject.hitInfo.transform;
+                        _InspectObject.objectHit = true;
+                    }
+                    else
+                        _InspectObject.objectHit = false;
+                }
+            }
+            else
+            {
+                _InspectObject.objectHit = false; // Set objectHit to false if no object is detected
+                playerInRange = false;
+                ableToInspect = false;
+            }
+
+            if(_InspectObject.objectHit)
+            {
+                _PlayerContr = _InspectObject.GetComponent<PlayerController>();
+                playerInRange = true;
+            }   
         }
     }
 
-    void OnTriggerExit(Collider collider) 
+    void OnDrawGizmos()
     {
-        if(_PlayerContr != null && inRange)
-        {
-            inRange = false;
-        }  
-    }
-
-    void OnTriggerStay(Collider collider) 
-    {
-        if(_PlayerContr != null)  
-            Interact();
-        
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(transform.position, interactRadius);
     }
 }

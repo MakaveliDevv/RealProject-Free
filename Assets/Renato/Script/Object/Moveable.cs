@@ -1,61 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Moveable : Interactable
 {
-    private GameObject moveableGameObject;
-    private OrbMovement _OrbMovement;
+    private Rigidbody rb;
+    public Transform objectTransform;
+    public Vector3 startingPosition = Vector3.zero;
 
+    [Header("Bool")]
+    [HideInInspector] public float interpolateAmount;
+    public bool isMoving;
+    public bool hasStartingPosition;
+    public bool inGravitationalCircle;
+    
     void Start() 
     {
-        _OrbMovement = GetComponent<OrbMovement>();
+        objectTransform = gameObject.transform;
+        rb = GetComponent<Rigidbody>();
     }
 
-    public override void InteractOnCollision()
+    void Update() 
     {
-        base.InteractOnCollision();
-
-        AddObjectToTheMovement();
+        if(rb != null && isMoving)
+            rb.useGravity = false;
     }
-
-    private void AddObjectToTheMovement() 
-    {
-        // Reference to the PlayerInteraction
-        if(_PlayerContr.TryGetComponent<PlayerInteraction>(out var playerInteraction))
-        {
-            // Then fetch the interactable object
-            moveableGameObject = playerInteraction._Interactable.gameObject;
-            SphereCollider sphereCollider = moveableGameObject.GetComponent<SphereCollider>();
-            Grabable _Grabable = moveableGameObject.GetComponentInChildren<Grabable>();
-            
-            if(sphereCollider != null) 
-                sphereCollider.enabled = true;
-            
-            if(_Grabable != null)
-            {
-                _Grabable.sphereCol.enabled = true;
-                _Grabable.objectPickedup = false;
-
-                moveableGameObject.transform.SetParent(null);
-                
-                // Add it to the moveableObjects list
-                _OrbMovement.moveableObjects.Add(moveableGameObject.transform);
-            }
-
-
-        }
-
-        // Check if the fetched object is the right object
-    }
-    
 }
-
-
-
-
-
-
-
-
-

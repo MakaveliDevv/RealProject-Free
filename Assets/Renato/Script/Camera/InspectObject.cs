@@ -2,50 +2,52 @@ using UnityEngine;
 
 public class InspectObject : MonoBehaviour
 {
+    public Interactable _Interactable;
     public new Camera camera;
+    public RaycastHit hitInfo;
     public float rotateSpeed = 200f;
     public float smoothingFactor = 8f;
-    public float detectionRadius = 1f; 
-
-    public Transform inspectObjectTransform;
+    public float detectionRadius = 1f;
+    public bool objectHit;
+    public Transform inspectObject;
     [SerializeField] private PlayerInteraction _PlayerInteraction;
 
     public bool inspectMode;
     private Vector2 inputRotateVector, targetRotateVector;
 
-    private struct CustomRaycastHit
-    {
-        public Transform transform;
-        public Vector3 point;
-        public Vector3 normal;
-        public float distance;
-    }
-    
+    private Vector3 rayOrigin;
+    private Vector3 rayDirection;
+    public bool rayExists = false;
+    public float distance = 2f;
 
-    void Awake() 
+    #region Singleton
+    public static InspectObject instance;
+
+    void Awake()
     {
+        instance = this;
+
         camera = GetComponent<Camera>();
         _PlayerInteraction = GetComponentInParent<PlayerInteraction>();
     }
+    #endregion
 
-    private void Update() 
+    private void Update()
     {
-        // To rotate an inspectable object
-        if(_PlayerInteraction != null && _PlayerInteraction.ableToInspect) 
+        if (_PlayerInteraction != null)
         {
-            if(_PlayerInteraction._Interactable != null)
+            if (_PlayerInteraction._Interactable != null)
             {
-                inspectObjectTransform = _PlayerInteraction._Interactable.transform;
-                RotateObject();
-            }
-        }
+                if (_PlayerInteraction._Interactable.TryGetComponent<Interactable>(out var interactable))
+                {
+                    _Interactable = interactable;
+                    inspectObject = interactable.transform;
 
-        if (CameraToMouseRay(Input.mousePosition, out CustomRaycastHit customRayHit))
-        {
-            if (customRayHit.transform.CompareTag("Interactable2"))
-            {
-                inspectObjectTransform = customRayHit.transform;
-                Debug.Log(customRayHit.transform.gameObject.name);
+                    if (_Interactable._InteractableType == Interactable.InteractableType.INSPECTABLE)
+                    {
+                        RotateObject();
+                    }
+                }
             }
         }
     }
@@ -57,7 +59,7 @@ public class InspectObject : MonoBehaviour
 
     public void RotateObject()
     {
-        if (!inspectMode || inspectObjectTransform == null)
+        if (!inspectMode || inspectObject == null)
             return;
 
         inputRotateVector = Vector2.Lerp(inputRotateVector, targetRotateVector, Time.deltaTime * smoothingFactor);
@@ -65,38 +67,28 @@ public class InspectObject : MonoBehaviour
         float deltaX = inputRotateVector.x * (rotateSpeed * 10f) * Time.deltaTime;
         float deltaY = inputRotateVector.y * (rotateSpeed * 10f) * Time.deltaTime;
 
-        inspectObjectTransform.rotation =
+        inspectObject.rotation =
                 Quaternion.AngleAxis(-deltaX, transform.up) *
                 Quaternion.AngleAxis(deltaY, transform.right) *
-                inspectObjectTransform.rotation;
-        
+                inspectObject.rotation;
     }
 
-    private bool CameraToMouseRay(Vector3 mousePosition, out CustomRaycastHit customRayHit)
+    public bool CameraToMouseRay()
     {
-        Ray ray = camera.ScreenPointToRay(mousePosition);
-        Vector3 worldPoint = ray.GetPoint(2f);  // Get a point along the ray a short distance away from the camera
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        rayOrigin = ray.origin;
+        rayDirection = ray.direction;
+        rayExists = true;  // Indicate that a ray exists
 
-        // Use OverlapSphere to detect colliders within a certain radius from the world point around the mouse position
-        Collider[] colliders = Physics.OverlapSphere(worldPoint, detectionRadius);
-        foreach (Collider collider in colliders)
+        return Physics.Raycast(ray, out hitInfo, distance);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (rayExists)
         {
-            if (collider.CompareTag("Interactable2"))
-            {
-                customRayHit = new CustomRaycastHit
-                {
-                    transform = collider.transform,
-                    point = collider.transform.position,
-                    normal = Vector3.zero, // Default normal
-                    distance = Vector3.Distance(worldPoint, collider.transform.position)
-                };
-                return true;
-            }
+            Gizmos.color = objectHit ? Color.green : Color.red;
+            Gizmos.DrawRay(rayOrigin, rayDirection * distance); // Draw the ray extending 'distance' units into the scene
         }
-
-        customRayHit = default;
-        return false;
     }
 }
-
-

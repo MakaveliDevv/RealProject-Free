@@ -42,25 +42,22 @@ public class InputHandler : MonoBehaviour
 
     public void GrabInput(InputAction.CallbackContext ctx) 
     {
-        if (_PlayerInteraction != null && _PlayerInteraction._Grabable != null)
-        {
-            if (_PlayerInteraction._Grabable.inGrabRange && ctx.performed)
-            {
+        if (_PlayerInteraction != null && ctx.performed)
+            if(_PlayerInteraction._Grabable != null) 
                 _PlayerInteraction._Grabable.ToggleGrab();
-            }
-        }
     }
 
     public void InspectInput(InputAction.CallbackContext ctx) 
     {
         if(ctx.performed) 
         {
-            // if able to inspect
-            if(_PlayerInteraction.ableToInspect)
+            if(_PlayerInteraction._Interactable.TryGetComponent<Inspectable>(out var inspectable))
             {
-                _InspectObject.inspectMode = true;
-                Inspectable _Inspectabple = _PlayerInteraction._Interactable.GetComponent<Inspectable>();
-                _Inspectabple.Inspect();
+                if(inspectable._InteractableType == Interactable.InteractableType.INSPECTABLE) 
+                {
+                    _InspectObject.inspectMode = true;
+                    inspectable.Inspect();
+                }
             }
         }
     }
@@ -83,7 +80,7 @@ public class InputHandler : MonoBehaviour
         // This is meant for when in inspect mode
         if(_InspectObject.inspectMode && ctx.performed) 
         {
-            if(_InspectObject.inspectObjectTransform.TryGetComponent<Inspectable>(out var _Inspectable)) 
+            if(_InspectObject.inspectObject.TryGetComponent<Inspectable>(out var _Inspectable)) 
             {
                 _Inspectable.releaseAfterInspect = true;
                 _Inspectable.AfterInspectInput();
@@ -97,7 +94,7 @@ public class InputHandler : MonoBehaviour
         // This is meant for when in inspect mode
         if(_InspectObject.inspectMode && ctx.performed) 
         {
-            if(_InspectObject.inspectObjectTransform.TryGetComponent<Inspectable>(out var _Inspectable)) 
+            if(_InspectObject.inspectObject.TryGetComponent<Inspectable>(out var _Inspectable)) 
             {
                 _Inspectable.grabAfterInspect = true;
                 _Inspectable.AfterInspectInput();

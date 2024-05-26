@@ -5,7 +5,7 @@ using UnityEngine;
 public class Inspectable : Interactable
 {
     [SerializeField] private new Camera camera;
-    public InspectObject _InspectObject;
+    public Grabable _Grabable;
     public bool releaseAfterInspect;
     public bool grabAfterInspect;
 
@@ -19,13 +19,15 @@ public class Inspectable : Interactable
     {   
         camera = Camera.main;
         _InspectObject = camera.GetComponent<InspectObject>();
+        _Grabable = GetComponentInChildren<Grabable>();
     }
 
     public void Inspect() 
     {
         _PlayerInteraction = _InspectObject.GetComponentInParent<PlayerInteraction>();
         
-        if(_PlayerInteraction.ableToInspect) 
+        // _PlayerInteraction.ableToInspect
+        if(_InteractableType == InteractableType.INSPECTABLE) 
         {   
             releaseAfterInspect = false;
             grabAfterInspect = false;
@@ -47,8 +49,29 @@ public class Inspectable : Interactable
             // Set the object in the middle of the camera            
             transform.SetParent(camera.transform); // Detach from any parent to be centered independently
 
-            transform.position = targetPosition;            
+            transform.position = targetPosition;
 
+
+            // Remove object from the Grabables list
+            Inventory.instance._Grabables.Clear();
+
+            objectPickedup = false;
+
+            if(_Grabable != null)
+            {
+                if(_Grabable.sphereCol != null)
+                {
+                    _Grabable.sphereCol.enabled = true;
+                    _Grabable.sphereCol.radius = 3f;
+                }
+
+
+                // Interactable
+                SphereCollider sphereColliderInteractable = GetComponent<SphereCollider>();
+                sphereColliderInteractable.enabled = true;
+                sphereColliderInteractable.radius = 5f;
+            }
+        
             // Unlock cursor
             Cursor.lockState = CursorLockMode.None;
         }
@@ -56,18 +79,14 @@ public class Inspectable : Interactable
 
     public void AfterInspectInput() 
     {
-        Grabable _Grabable = GetComponentInChildren<Grabable>();
-        _InspectObject.inspectMode = false;
+        if(releaseAfterInspect)     
+            _Grabable.Drop();
+    
+        else if(grabAfterInspect)     
+            _Grabable.Grab();
+    
 
         Cursor.lockState = CursorLockMode.Locked;
-        
-        if(releaseAfterInspect) 
-        {
-            _Grabable.Release();
-        }
-        else if(grabAfterInspect) 
-        {
-            _Grabable.Grab();
-        }
+        _InspectObject.inspectMode = false;
     }
 }
