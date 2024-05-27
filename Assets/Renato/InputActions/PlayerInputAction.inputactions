@@ -67,6 +67,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Lock/Unlock Action",
+                    "type": "Button",
+                    "id": "b9bcc246-a833-41df-9f62-3948fb339bfb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ReloadScene Action",
+                    "type": "Button",
+                    "id": "5821f226-9c48-4f4d-8c84-b980b11f33ee",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -298,6 +316,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Jump Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "15675d8b-30ca-47cb-8028-861d72cad4b5",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lock/Unlock Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f154c95a-a20a-44fa-a5bb-d0f18b611429",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ReloadScene Action",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

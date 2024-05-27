@@ -51,14 +51,11 @@ public class InputHandler : MonoBehaviour
     {
         if(ctx.performed) 
         {
-            // if(_PlayerInteraction._Interactable.TryGetComponent<Inspectable>(out var inspectable))
-            // {
-                if(_PlayerInteraction._Interactable._InteractableType == Interactable.InteractableType.INSPECTABLE) 
-                {
-                    _InspectObject.inspectMode = true;
-                    _PlayerInteraction._Interactable.Inspect();
-                }
-            // }
+            if(_PlayerInteraction._Interactable._InteractableType == Interactable.InteractableType.INSPECTABLE) 
+            {
+                _InspectObject.inspectMode = true;
+                _PlayerInteraction._Interactable.Inspect();
+            }
         }
     }
 
@@ -105,10 +102,27 @@ public class InputHandler : MonoBehaviour
 
     public void JumpInput(InputAction.CallbackContext ctx) 
     {
-        if(_Player != null && !_Player.jumping) 
-        {   
-            Debug.Log(ctx.performed);
-            _Player.Jump();
+        if(ctx.performed)
+        {
+            if(_Player != null && !_Player.jumping) 
+            {   
+                Debug.Log(ctx.performed);
+                _Player.Jump();
+            }
         }
+    }
+
+    public void UnlockInput(InputAction.CallbackContext ctx) 
+    {
+        if(ctx.performed)
+            if(_Player != null)
+                _Player.LockUnlockState();     
+    }
+
+    public void ReloadSceneInput(InputAction.CallbackContext ctx) 
+    {
+        if(ctx.performed)
+            if(_Player != null)
+                _Player.ReloadScene();     
     }
 }

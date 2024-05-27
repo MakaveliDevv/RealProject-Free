@@ -68,7 +68,7 @@ public class Grabable : MonoBehaviour
             // Check if the object got hit
             if(_Interactable._InspectObject.objectHit) 
             {
-                Debug.Log("Grab distance");
+                // Debug.Log("Grab distance");
                 _PlayerC = controller;
                 grabable = true;
             }
@@ -116,22 +116,22 @@ public class Grabable : MonoBehaviour
             
             if (sphereCol_child != null)
             {
-                Debug.Log("Disabling SphereCollider: " + sphereCol_child.gameObject.name);
+                // Debug.Log("Disabling SphereCollider: " + sphereCol_child.gameObject.name);
                 sphereCol_child.enabled = false;
             }
             else
             {
-                Debug.LogWarning("SphereCollider not found in children.");
+                // Debug.LogWarning("SphereCollider not found in children.");
             }
 
             if (boxCol_child != null)
             {
-                Debug.Log("Disabling BoxCollider: " + boxCol_child.gameObject.name);
+                // Debug.Log("Disabling BoxCollider: " + boxCol_child.gameObject.name);
                 boxCol_child.enabled = false;
             }
             else
             {
-                Debug.LogWarning("BoxCollider not found in children.");
+                // Debug.LogWarning("BoxCollider not found in children.");
             }
 
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class Interactable : MonoBehaviour
@@ -12,28 +13,30 @@ public class Interactable : MonoBehaviour
     public ObjectType _ObjectType;
     public GravitationalType _GravitationalType;
 
-    public PlayerController _PlayerContr;
-    public InspectObject _InspectObject;
-    public bool playerInRange;
+    // Script References
+    public PlayerInteraction _PlayerInteraction; // Using this to fetch the player controller
+    private PlayerController _PlayerController;
+    [HideInInspector] public InspectObject _InspectObject;
+    private Grabable _Grabable;
 
+    // Components
+    private new Camera camera;
+
+    // Booleans
+    [HideInInspector] public bool playerInRange;
+    [HideInInspector] public bool objectPickedup;
+    [HideInInspector] public bool objectReleased;
+    [HideInInspector] public bool ableToInspect;
+    [HideInInspector] public bool releaseAfterInspect;
+    [HideInInspector] public bool grabAfterInspect;
+
+    // Floats
     [SerializeField] protected float interactRadius = 1.25f;
-    public bool objectPickedup;
-    public bool objectReleased;
-    public bool ableToInspect;
 
-
-
-
-    [SerializeField] private new Camera camera;
-    public Grabable _Grabable;
-    public bool releaseAfterInspect;
-    public bool grabAfterInspect;
-
-    // Additional variables to freeze the camera
+    // Camera stuff
     private Vector3 frozenCameraPosition;
     private Quaternion frozenCameraRotation;
     [SerializeField] private float distanceFromCamera = 2f;
-    public PlayerInteraction _PlayerInteraction;
 
 
     void Awake()
@@ -75,8 +78,8 @@ public class Interactable : MonoBehaviour
 
             if(_InspectObject.objectHit)
             {
-                _PlayerContr = _InspectObject.GetComponentInParent<PlayerController>();
-                Debug.Log(_InspectObject.hitInfo.transform.gameObject.name);
+                _PlayerController = _InspectObject.GetComponentInParent<PlayerController>();
+                // Debug.Log(_InspectObject.hitInfo.transform.gameObject.name);
                 playerInRange = true;
             }   
         }
@@ -102,7 +105,7 @@ public class Interactable : MonoBehaviour
             _PlayerInteraction.GetComponent<PlayerController>().shake = false;
             _PlayerInteraction.GetComponent<PlayerController>().ableToLookAround = false;
             
-            camera.transform.localPosition = _PlayerContr.initialCamPos;
+            camera.transform.localPosition = _PlayerController.initialCamPos;
 
             // Freeze the camera on the current position
             frozenCameraPosition = camera.transform.position;
@@ -110,35 +113,17 @@ public class Interactable : MonoBehaviour
 
             // Disable camera movement by setting initial position and rotation
             camera.transform.SetPositionAndRotation(frozenCameraPosition, frozenCameraRotation);
-
             Vector3 targetPosition = camera.transform.position + camera.transform.forward * distanceFromCamera;
 
             // Set the object in the middle of the camera            
             transform.SetParent(camera.transform); // Detach from any parent to be centered independently
-
             transform.position = targetPosition;
-
 
             // Remove object from the Grabables list
             Inventory.instance._Grabables.Clear();
 
             objectPickedup = false;
 
-            // if(_Grabable != null)
-            // {
-            //     if(_Grabable.sphereCol != null)
-            //     {
-            //         _Grabable.sphereCol.enabled = true;
-            //         _Grabable.sphereCol.radius = 3f;
-            //     }
-
-
-            //     // Interactable
-            //     SphereCollider sphereColliderInteractable = GetComponent<SphereCollider>();
-            //     sphereColliderInteractable.enabled = true;
-            //     sphereColliderInteractable.radius = 5f;
-            // }
-        
             // Unlock cursor
             Cursor.lockState = CursorLockMode.None;
         }

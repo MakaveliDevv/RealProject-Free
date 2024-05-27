@@ -89,6 +89,24 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Lock/Unlock Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""b9bcc246-a833-41df-9f62-3948fb339bfb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ReloadScene Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""5821f226-9c48-4f4d-8c84-b980b11f33ee"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -322,6 +340,28 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""Jump Action"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""15675d8b-30ca-47cb-8028-861d72cad4b5"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lock/Unlock Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f154c95a-a20a-44fa-a5bb-d0f18b611429"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ReloadScene Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -337,6 +377,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_InputAction_RotateInput = m_InputAction.FindAction("Rotate Input", throwIfNotFound: true);
         m_InputAction_RelaseAction = m_InputAction.FindAction("Relase Action", throwIfNotFound: true);
         m_InputAction_JumpAction = m_InputAction.FindAction("Jump Action", throwIfNotFound: true);
+        m_InputAction_LockUnlockAction = m_InputAction.FindAction("Lock/Unlock Action", throwIfNotFound: true);
+        m_InputAction_ReloadSceneAction = m_InputAction.FindAction("ReloadScene Action", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -405,6 +447,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_InputAction_RotateInput;
     private readonly InputAction m_InputAction_RelaseAction;
     private readonly InputAction m_InputAction_JumpAction;
+    private readonly InputAction m_InputAction_LockUnlockAction;
+    private readonly InputAction m_InputAction_ReloadSceneAction;
     public struct InputActionActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -416,6 +460,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         public InputAction @RotateInput => m_Wrapper.m_InputAction_RotateInput;
         public InputAction @RelaseAction => m_Wrapper.m_InputAction_RelaseAction;
         public InputAction @JumpAction => m_Wrapper.m_InputAction_JumpAction;
+        public InputAction @LockUnlockAction => m_Wrapper.m_InputAction_LockUnlockAction;
+        public InputAction @ReloadSceneAction => m_Wrapper.m_InputAction_ReloadSceneAction;
         public InputActionMap Get() { return m_Wrapper.m_InputAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -446,6 +492,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @JumpAction.started += instance.OnJumpAction;
             @JumpAction.performed += instance.OnJumpAction;
             @JumpAction.canceled += instance.OnJumpAction;
+            @LockUnlockAction.started += instance.OnLockUnlockAction;
+            @LockUnlockAction.performed += instance.OnLockUnlockAction;
+            @LockUnlockAction.canceled += instance.OnLockUnlockAction;
+            @ReloadSceneAction.started += instance.OnReloadSceneAction;
+            @ReloadSceneAction.performed += instance.OnReloadSceneAction;
+            @ReloadSceneAction.canceled += instance.OnReloadSceneAction;
         }
 
         private void UnregisterCallbacks(IInputActionActions instance)
@@ -471,6 +523,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @JumpAction.started -= instance.OnJumpAction;
             @JumpAction.performed -= instance.OnJumpAction;
             @JumpAction.canceled -= instance.OnJumpAction;
+            @LockUnlockAction.started -= instance.OnLockUnlockAction;
+            @LockUnlockAction.performed -= instance.OnLockUnlockAction;
+            @LockUnlockAction.canceled -= instance.OnLockUnlockAction;
+            @ReloadSceneAction.started -= instance.OnReloadSceneAction;
+            @ReloadSceneAction.performed -= instance.OnReloadSceneAction;
+            @ReloadSceneAction.canceled -= instance.OnReloadSceneAction;
         }
 
         public void RemoveCallbacks(IInputActionActions instance)
@@ -497,5 +555,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         void OnRotateInput(InputAction.CallbackContext context);
         void OnRelaseAction(InputAction.CallbackContext context);
         void OnJumpAction(InputAction.CallbackContext context);
+        void OnLockUnlockAction(InputAction.CallbackContext context);
+        void OnReloadSceneAction(InputAction.CallbackContext context);
     }
 }

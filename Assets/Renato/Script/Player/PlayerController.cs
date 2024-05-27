@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float cameraSwayAmount = 0.1f;
     [SerializeField] private float cameraSwaySpeed = 2f; 
     public bool shake;
+    private bool lockstate;
 
     // Mouse look
     [Header("Mouse Look")]
@@ -59,31 +60,8 @@ public class PlayerController : MonoBehaviour
 
         initialCamPos = new(cam.transform.localPosition.x, cam.transform.localPosition.y, cam.transform.localPosition.z);
         Cursor.lockState = CursorLockMode.Locked;
-    
-        // allowedToMove = true;
-        // ableToShake = true;
+
         ableToLookAround = true;
-    }
-
-    void Update()
-    {
-        if(Input.GetKey(KeyCode.Escape) && Cursor.lockState == CursorLockMode.Locked) 
-            Cursor.lockState = CursorLockMode.None;
-        
-        else if(Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0) && Cursor.lockState == CursorLockMode.None) 
-            Cursor.lockState = CursorLockMode.Locked;
-
-
-        if(Cursor.lockState == CursorLockMode.Locked)
-            cursorLocked = true;
-
-        else if(Cursor.lockState == CursorLockMode.None)
-            cursorLocked = false;
-
-
-        if(Input.GetKey(KeyCode.Space)) 
-            SceneManager.LoadScene("Scene_Renato");
-            
     }
 
     void FixedUpdate() 
@@ -93,6 +71,25 @@ public class PlayerController : MonoBehaviour
         {
             MouseLook();
             Moving();
+        }
+    }
+
+    public void ReloadScene() 
+    {
+        SceneManager.LoadScene("Scene_Renato");
+    }
+
+    public void LockUnlockState() 
+    {
+        if(Cursor.lockState == CursorLockMode.Locked) 
+        {
+            Cursor.lockState = CursorLockMode.None;
+            lockstate = true;
+        }
+        else if(Cursor.lockState == CursorLockMode.None)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            lockstate = false;
         }
     }
     
@@ -126,6 +123,10 @@ public class PlayerController : MonoBehaviour
 
     void Moving()
     {
+        cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
+        if(inspectObject.inspectMode || lockstate)
+            return;        
+            
         ApplyGravity();
 
         inputDirection = new Vector3(inputVector.x, 0f, inputVector.z);

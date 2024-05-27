@@ -11,6 +11,7 @@ public class Moveable : Interactable
     public bool isMoving;
     public bool hasStartingPosition;
     public bool inGravitationalCircle;
+    public bool isInitializing = true; // New flag for initialization phase
     
     void Start() 
     {
