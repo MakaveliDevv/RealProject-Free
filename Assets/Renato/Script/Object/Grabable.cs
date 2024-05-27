@@ -7,7 +7,8 @@ public class Grabable : MonoBehaviour
     public Interactable _Interactable;
     public PlayerController _PlayerC;
 
-    public SphereCollider sphereCol;
+    public SphereCollider sphereCol, sphereCol_child;
+    public BoxCollider boxCol_child;
     private Rigidbody rb;
     
     public bool grabable;
@@ -22,6 +23,19 @@ public class Grabable : MonoBehaviour
     {
         _Interactable = GetComponentInParent<Interactable>();
         rb = GetComponentInParent<Rigidbody>();
+
+        // Fetch specific child objects by name or path
+        Transform sphereChildTransform = transform.Find("DefaultCollider");
+        if (sphereChildTransform != null)
+
+            sphereCol_child = sphereChildTransform.GetComponent<SphereCollider>();
+        
+
+        Transform boxChildTransform = transform.Find("DefaultCollider");
+        if (boxChildTransform != null)
+            boxCol_child = boxChildTransform.GetComponent<BoxCollider>();
+        
+        
 
         if (TryGetComponent<SphereCollider>(out var col))
         {
@@ -96,8 +110,30 @@ public class Grabable : MonoBehaviour
         {
             _Interactable.gameObject.transform.SetParent(_PlayerC.objectPos.transform);
             _Interactable.gameObject.transform.SetPositionAndRotation(_PlayerC.objectPos.transform.position, _PlayerC.objectPos.transform.rotation);
-            sphereCol.enabled = false;
+            
             _Interactable.gameObject.GetComponent<SphereCollider>().enabled = false;
+            sphereCol.enabled = false;
+            
+            if (sphereCol_child != null)
+            {
+                Debug.Log("Disabling SphereCollider: " + sphereCol_child.gameObject.name);
+                sphereCol_child.enabled = false;
+            }
+            else
+            {
+                Debug.LogWarning("SphereCollider not found in children.");
+            }
+
+            if (boxCol_child != null)
+            {
+                Debug.Log("Disabling BoxCollider: " + boxCol_child.gameObject.name);
+                boxCol_child.enabled = false;
+            }
+            else
+            {
+                Debug.LogWarning("BoxCollider not found in children.");
+            }
+
 
             if(rb != null) 
                 Destroy(rb);
@@ -135,9 +171,14 @@ public class Grabable : MonoBehaviour
             if(sphereCol != null)
             {
                 sphereCol.enabled = true;
+                if(sphereCol_child != null)
+                    sphereCol_child.enabled = true;
 
-                if(sphereCol.radius != grabRadius)
-                    sphereCol.radius = grabRadius;
+                if(boxCol_child != null)
+                    boxCol_child.enabled = true;
+
+                // if(sphereCol.radius != grabRadius)
+                //     sphereCol.radius = grabRadius;
             }
         } 
     }

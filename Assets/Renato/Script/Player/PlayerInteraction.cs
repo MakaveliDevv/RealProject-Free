@@ -7,6 +7,7 @@ public class PlayerInteraction : MonoBehaviour
     public Grabable _Grabable; // Reference to the grabable object
     public Interactable _Interactable; // Reference to the inspect object
     public InspectObject _InspectObject;
+    public GameObject hitObj;
 
     void Awake()
     {
@@ -20,7 +21,7 @@ public class PlayerInteraction : MonoBehaviour
             // If object hit
             if(_InspectObject.objectHit)
             {
-                GameObject hitObj = _InspectObject.hitInfo.transform.gameObject;
+                hitObj = _InspectObject.hitInfo.transform.gameObject;
                 if(hitObj.TryGetComponent<Interactable>(out var interactable))
                 {
                     if(!interactable.objectPickedup) 

@@ -16,15 +16,32 @@ public class Interactable : MonoBehaviour
     public InspectObject _InspectObject;
     public bool playerInRange;
 
-    [SerializeField] protected float interactRadius = 3f;
+    [SerializeField] protected float interactRadius = 1.25f;
     public bool objectPickedup;
     public bool objectReleased;
     public bool ableToInspect;
 
 
+
+
+    [SerializeField] private new Camera camera;
+    public Grabable _Grabable;
+    public bool releaseAfterInspect;
+    public bool grabAfterInspect;
+
+    // Additional variables to freeze the camera
+    private Vector3 frozenCameraPosition;
+    private Quaternion frozenCameraRotation;
+    [SerializeField] private float distanceFromCamera = 2f;
+    public PlayerInteraction _PlayerInteraction;
+
+
     void Awake()
-    {       
-        _InspectObject = InspectObject.instance;
+    {    
+        camera = Camera.main;
+        _InspectObject = camera.gameObject.GetComponent<InspectObject>();
+        _Grabable = GetComponentInChildren<Grabable>();
+
         if (TryGetComponent<SphereCollider>(out var col))
         {
             col.radius = interactRadius;
@@ -32,7 +49,7 @@ public class Interactable : MonoBehaviour
         }
     }
 
-    void Update()
+    virtual public void Update()
     {
         if(!objectPickedup) 
         {
@@ -58,7 +75,8 @@ public class Interactable : MonoBehaviour
 
             if(_InspectObject.objectHit)
             {
-                _PlayerContr = _InspectObject.GetComponent<PlayerController>();
+                _PlayerContr = _InspectObject.GetComponentInParent<PlayerController>();
+                Debug.Log(_InspectObject.hitInfo.transform.gameObject.name);
                 playerInRange = true;
             }   
         }
@@ -68,5 +86,74 @@ public class Interactable : MonoBehaviour
     {
         Gizmos.color = Color.blue;
         Gizmos.DrawSphere(transform.position, interactRadius);
+    }
+
+    public void Inspect() 
+    {
+        _PlayerInteraction = _InspectObject.GetComponentInParent<PlayerInteraction>();
+        
+        // _PlayerInteraction.ableToInspect
+        if(_InteractableType == InteractableType.INSPECTABLE) 
+        {   
+            releaseAfterInspect = false;
+            grabAfterInspect = false;
+            _Grabable.grabable = true;
+
+            _PlayerInteraction.GetComponent<PlayerController>().shake = false;
+            _PlayerInteraction.GetComponent<PlayerController>().ableToLookAround = false;
+            
+            camera.transform.localPosition = _PlayerContr.initialCamPos;
+
+            // Freeze the camera on the current position
+            frozenCameraPosition = camera.transform.position;
+            frozenCameraRotation = camera.transform.rotation;
+
+            // Disable camera movement by setting initial position and rotation
+            camera.transform.SetPositionAndRotation(frozenCameraPosition, frozenCameraRotation);
+
+            Vector3 targetPosition = camera.transform.position + camera.transform.forward * distanceFromCamera;
+
+            // Set the object in the middle of the camera            
+            transform.SetParent(camera.transform); // Detach from any parent to be centered independently
+
+            transform.position = targetPosition;
+
+
+            // Remove object from the Grabables list
+            Inventory.instance._Grabables.Clear();
+
+            objectPickedup = false;
+
+            // if(_Grabable != null)
+            // {
+            //     if(_Grabable.sphereCol != null)
+            //     {
+            //         _Grabable.sphereCol.enabled = true;
+            //         _Grabable.sphereCol.radius = 3f;
+            //     }
+
+
+            //     // Interactable
+            //     SphereCollider sphereColliderInteractable = GetComponent<SphereCollider>();
+            //     sphereColliderInteractable.enabled = true;
+            //     sphereColliderInteractable.radius = 5f;
+            // }
+        
+            // Unlock cursor
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
+
+    public void AfterInspectInput() 
+    {
+        if(releaseAfterInspect)     
+            _Grabable.Drop();
+    
+        else if(grabAfterInspect)     
+            _Grabable.Grab();
+    
+
+        Cursor.lockState = CursorLockMode.Locked;
+        _InspectObject.inspectMode = false;
     }
 }

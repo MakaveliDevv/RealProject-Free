@@ -26,11 +26,14 @@ public class InspectObject : MonoBehaviour
     void Awake()
     {
         instance = this;
+    }
+    #endregion
 
+    void Start() 
+    {
         camera = GetComponent<Camera>();
         _PlayerInteraction = GetComponentInParent<PlayerInteraction>();
     }
-    #endregion
 
     private void Update()
     {

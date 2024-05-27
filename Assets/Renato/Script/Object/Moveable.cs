@@ -18,8 +18,10 @@ public class Moveable : Interactable
         rb = GetComponent<Rigidbody>();
     }
 
-    void Update() 
+    public override void Update() 
     {
+        base.Update();
+
         if(rb != null && isMoving)
             rb.useGravity = false;
     }

@@ -51,14 +51,14 @@ public class InputHandler : MonoBehaviour
     {
         if(ctx.performed) 
         {
-            if(_PlayerInteraction._Interactable.TryGetComponent<Inspectable>(out var inspectable))
-            {
-                if(inspectable._InteractableType == Interactable.InteractableType.INSPECTABLE) 
+            // if(_PlayerInteraction._Interactable.TryGetComponent<Inspectable>(out var inspectable))
+            // {
+                if(_PlayerInteraction._Interactable._InteractableType == Interactable.InteractableType.INSPECTABLE) 
                 {
                     _InspectObject.inspectMode = true;
-                    inspectable.Inspect();
+                    _PlayerInteraction._Interactable.Inspect();
                 }
-            }
+            // }
         }
     }
 
@@ -80,10 +80,10 @@ public class InputHandler : MonoBehaviour
         // This is meant for when in inspect mode
         if(_InspectObject.inspectMode && ctx.performed) 
         {
-            if(_InspectObject.inspectObject.TryGetComponent<Inspectable>(out var _Inspectable)) 
+            if(_InspectObject.inspectObject.TryGetComponent<Interactable>(out var _Interactable)) 
             {
-                _Inspectable.releaseAfterInspect = true;
-                _Inspectable.AfterInspectInput();
+                _Interactable.releaseAfterInspect = true;
+                _Interactable.AfterInspectInput();
                 Debug.Log("Object released from inspect mode");
             } 
         }
@@ -94,10 +94,10 @@ public class InputHandler : MonoBehaviour
         // This is meant for when in inspect mode
         if(_InspectObject.inspectMode && ctx.performed) 
         {
-            if(_InspectObject.inspectObject.TryGetComponent<Inspectable>(out var _Inspectable)) 
+            if(_InspectObject.inspectObject.TryGetComponent<Interactable>(out var _Interactable)) 
             {
-                _Inspectable.grabAfterInspect = true;
-                _Inspectable.AfterInspectInput();
+                _Interactable.grabAfterInspect = true;
+                _Interactable.AfterInspectInput();
                 Debug.Log("Object grabbed from inspect mode");
             } 
         }

@@ -25,81 +25,66 @@ public class OrbMovement : MonoBehaviour
 
     private void Update()
     {
-        if (moveableObjects.Count == 0 || controlPoints.Count < 4)
+        if (moveableObjects.Count == 0 || controlPoints.Count < 4 && !playerInRange)
             return;
 
         for (int i = 0; i < moveableObjects.Count; i++)
         {
-            Moveable _Moveable = moveableObjects[i]; // Reference to the Moveable in the list
-            // Transform obj = moveableObj.objectTransform; // Reference to the Transform from the Moveable
+            Moveable moveable = moveableObjects[i];
+    
+            // Set the starting position to the first control point when an object is added
+            if (!moveable.hasStartingPosition)
+            {
+                moveable.startingPosition = controlPoints[0].position;
+                moveable.hasStartingPosition = true;
+                moveable.isMoving = true;
+                moveable.interpolateAmount = i / (float)moveableObjects.Count % 1f; // Stagger start positions
+                Debug.Log("Starting Position: " + moveable.startingPosition);
+            }
 
-            // Fetch the Moveable script
-            // if (obj.gameObject.TryGetComponent<Moveable>(out var _Moveable)) 
-            // {
-                // Set the starting position to the first control point when an object is added
-                if (!_Moveable.hasStartingPosition)
+            // Ensure the object is moving
+            if (!moveable.isMoving)
+                continue;
+
+            moveable.interpolateAmount = (moveable.interpolateAmount + Time.deltaTime / controlPoints.Count) % 1f;
+            int segmentCount = controlPoints.Count;
+            float t = moveable.interpolateAmount * segmentCount;
+            int currentPoint = Mathf.FloorToInt(t);
+            t -= currentPoint;
+
+            Vector3 position = CatmullRom(
+                controlPoints[(currentPoint - 1 + segmentCount) % segmentCount].position,
+                controlPoints[currentPoint % segmentCount].position,
+                controlPoints[(currentPoint + 1) % segmentCount].position,
+                controlPoints[(currentPoint + 2) % segmentCount].position,
+                t);
+
+            moveable.objectTransform.position = position;
+
+            // Check if the object has returned to the starting position
+            if (!moveable.inGravitationalCircle && moveable.interpolateAmount >= 0.9f && Vector3.Distance(moveable.objectTransform.position, moveable.startingPosition) < threshold)
+            {
+                moveable.objectTransform.position = moveable.startingPosition;
+                moveable.isMoving = false;
+                moveable.inGravitationalCircle = true;
+                moveable.interpolateAmount = 0;
+                Debug.Log("Object has returned to the starting position.");
+            }
+
+
+            for (int j = 0; j < moveableObjects.Count; j++)
+            {
+                if (i != j)
                 {
-                    _Moveable.startingPosition = controlPoints[0].position;
-                    _Moveable.hasStartingPosition = true;
-                    _Moveable.isMoving = true;
-                    // moveable.InterpolateAmount = 0; // Ensure InterpolateAmount starts at 0
-                    Debug.Log("Starting Position: " + _Moveable.startingPosition);
-                }
-
-                // Ensure the object is moving
-                if (!_Moveable.isMoving)
-                    continue;
-
-                _Moveable.interpolateAmount = (_Moveable.interpolateAmount + Time.deltaTime / controlPoints.Count) % 1f;
-                int segmentCount = controlPoints.Count;
-                float t = _Moveable.interpolateAmount * segmentCount;
-                int currentPoint = Mathf.FloorToInt(t);
-                t -= currentPoint;
-
-                Vector3 position = CatmullRom(
-                    controlPoints[(currentPoint - 1 + segmentCount) % segmentCount].position,
-                    controlPoints[currentPoint % segmentCount].position,
-                    controlPoints[(currentPoint + 1) % segmentCount].position,
-                    controlPoints[(currentPoint + 2) % segmentCount].position,
-                    t);
-
-                _Moveable.objectTransform.position = position;
-
-                // if(_Moveable.objectTransform.position.magnitude > 0.01f) 
-                //     _Moveable.inGravitationalCircle = true;
-
-                // Check the distance to other objects and stop if too close
-                for (int j = 0; j < moveableObjects.Count; j++)
-                {
-                    if (i != j)
+                    Moveable otherMoveable = moveableObjects[j];
+                    if (Vector3.Distance(moveable.objectTransform.position, otherMoveable.objectTransform.position) < minimumDistance)
                     {
-                        Moveable otherMoveable = moveableObjects[j];
-                        if (Vector3.Distance(_Moveable.objectTransform.position, otherMoveable.objectTransform.position) < minimumDistance)
-                        {
-                            this._Moveable.isMoving = false;
-                            Debug.Log("Object stopped to maintain minimum distance.");
-                        }
+                        moveable.isMoving = false;
+                        Debug.Log("Object stopped to maintain minimum distance.");
+                        break; // Exit the loop as soon as we stop the object
                     }
                 }
-
-                // if(_Moveable.inGravitationalCircle) 
-                //     return;
-
-                if(!_Moveable.inGravitationalCircle)
-                {
-                    // Check if the object has returned to the starting position
-                    if (_Moveable.interpolateAmount >= .9f && Vector3.Distance(_Moveable.objectTransform.position, _Moveable.startingPosition) < threshold)
-                    {
-                        _Moveable.objectTransform.position = _Moveable.startingPosition;
-                        _Moveable.isMoving = false;
-                        _Moveable.inGravitationalCircle = true;
-
-                        // moveable.InterpolateAmount = 0; // Reset InterpolateAmount to start from beginning next time
-                        // objState.HasStartingPosition = false; // Reset for next object addition
-                        Debug.Log("Object has returned to the starting position.");
-                    }
-                }
-            // }
+            }
         }
     }
 
