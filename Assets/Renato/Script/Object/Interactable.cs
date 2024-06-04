@@ -50,6 +50,18 @@ public class Interactable : MonoBehaviour
             col.radius = interactRadius;
             col.isTrigger = true;
         }
+
+        if(_GravitationalType == GravitationalType.FLOATING)
+        {
+            if(TryGetComponent<Rigidbody>(out var rb))
+                rb.useGravity = false;
+        }
+        else if(_GravitationalType == GravitationalType.NON_FLOATING)
+        {
+            if(TryGetComponent<Rigidbody>(out var rb))
+            rb.useGravity = true;
+            
+        }            
     }
 
     virtual public void Update()

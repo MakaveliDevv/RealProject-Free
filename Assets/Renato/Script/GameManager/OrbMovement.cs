@@ -10,7 +10,7 @@ public class OrbMovement : MonoBehaviour
     [SerializeField] private Moveable _Moveable;
 
     [Header("List")]
-    [SerializeField] private List<Transform> controlPoints;
+    [SerializeField] public List<Transform> controlPoints;
     [SerializeField] private List<Moveable> moveableObjects = new();
 
     [Header("GameObject")]
@@ -25,6 +25,14 @@ public class OrbMovement : MonoBehaviour
     private Vector3 offsetDirection;
     public float offsetDistance;
 
+    #region Singleton
+    public static OrbMovement instance;
+    void Awake() 
+    {
+        instance = this;
+    }
+    
+    #endregion
     // private void Update()
     // {
     //     if (moveableObjects.Count == 0 || controlPoints.Count < 4 && !playerInRange)
