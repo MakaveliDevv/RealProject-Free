@@ -1,0 +1,54 @@
+{
+    "name": "MovementController",
+    "maps": [
+        {
+            "name": "Feet",
+            "id": "2fb79b31-c3fe-455c-8483-373420706922",
+            "actions": [
+                {
+                    "name": "MoveLeft",
+                    "type": "Button",
+                    "id": "c4fcc285-f7a8-4fd3-b0a6-1ad923fdf2c7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "MoveRigt",
+                    "type": "Button",
+                    "id": "7f40de44-3f84-4883-b1c0-27d8f45f2957",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "664576d7-bc65-474b-bcb9-e7e3a0595b04",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e33665e7-af0a-4b9b-9d89-a6aed8e75111",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveRigt",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

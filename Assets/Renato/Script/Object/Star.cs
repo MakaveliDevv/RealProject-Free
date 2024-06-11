@@ -1,67 +1,52 @@
-// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEngine;
-
-// public class Star : Interactable
-// {
-//     [SerializeField] float moveableSpeed = 10f;
-//     [SerializeField] float duration = 3f;
-    
-//     void OnTriggerEnter(Collider collider) 
-//     {
-//         if(collider.CompareTag("Player")) 
-//         {
-//             Debug.Log("Made contact with the player");
-
-//             // Fetch the first control point
-//             Transform firstControlPoint = OrbMovement.instance.controlPoints[0].transform;
-
-//             // Move towards the first control point
-//             float t = moveableSpeed / duration;
-//             Vector3 direction = Vector3.Lerp(transform.position, firstControlPoint.position, t);
-
-//             // Indicate that the object in the gravitational orbit
-//             transform.Translate(direction);
-//         }
-//     }
-// }
-
-
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Star : Interactable
 {
-    [SerializeField] float moveableSpeed = 10f;
-    [SerializeField] float duration = 3f;
+    [SerializeField] private float duration = 3f;
+    [SerializeField] private bool insideOrbit;
+    // public bool destroyTimerRunning;
+
+    public bool interact;
+    public GameObject point;
+
+    void Start() 
+    {
+        point = GameObject.FindGameObjectWithTag("AssemblePoint");
+    }
     
     void OnTriggerEnter(Collider collider) 
     {
-        if(collider.CompareTag("Player")) 
+        if(collider.CompareTag("Footstep")) 
         {
-            Debug.Log("Made contact with the player");
+            interact = true;
+            // destroyTimerRunning = false;
+            // Debug.Log("Made contact with the footsteps");
 
             // Fetch the first control point
-            Transform firstControlPoint = OrbMovement.instance.controlPoints[0].transform;
+            // Transform firstControlPoint = OrbMovement.instance.controlPoints[0].transform;
+            
+            // Move towards the first control point
+            StartCoroutine(MoveTowardsControlPoint(point.transform));
 
-            // Start moving towards the first control point
-            StartCoroutine(MoveTowardsControlPoint(firstControlPoint));
+            // Indicate that the object is in the gravitational orbit
+            insideOrbit = true;
         }
     }
 
-    IEnumerator MoveTowardsControlPoint(Transform target)
+    private IEnumerator MoveTowardsControlPoint(Transform target) 
     {
         Vector3 startPosition = transform.position;
         float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
+        while(elapsedTime < duration)
         {
-            transform.position = Vector3.Lerp(startPosition, target.position, elapsedTime / duration);
+            float t = elapsedTime / duration;
+            transform.position = Vector3.Lerp(startPosition, target.position, t);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // Ensure the object ends exactly at the target position
         transform.position = target.position;
     }
 }

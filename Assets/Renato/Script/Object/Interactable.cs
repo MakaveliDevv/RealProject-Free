@@ -68,32 +68,35 @@ public class Interactable : MonoBehaviour
     {
         if(!objectPickedup) 
         {
-            if (_InspectObject.CameraToMouseRay())
+            if(_InspectObject != null)
             {
-                if (_InspectObject.rayExists)
+                if (_InspectObject.CameraToMouseRay())
                 {
-                    if (_InspectObject.hitInfo.transform.CompareTag("Interactable"))
+                    if (_InspectObject.rayExists)
                     {
-                        _InspectObject.inspectObject = _InspectObject.hitInfo.transform;
-                        _InspectObject.objectHit = true;
+                        if (_InspectObject.hitInfo.transform.CompareTag("Interactable"))
+                        {
+                            _InspectObject.inspectObject = _InspectObject.hitInfo.transform;
+                            _InspectObject.objectHit = true;
+                        }
+                        else
+                            _InspectObject.objectHit = false;
                     }
-                    else
-                        _InspectObject.objectHit = false;
                 }
-            }
-            else
-            {
-                _InspectObject.objectHit = false; // Set objectHit to false if no object is detected
-                playerInRange = false;
-                ableToInspect = false;
-            }
+                else
+                {
+                    _InspectObject.objectHit = false; // Set objectHit to false if no object is detected
+                    playerInRange = false;
+                    ableToInspect = false;
+                }
 
-            if(_InspectObject.objectHit)
-            {
-                _PlayerController = _InspectObject.GetComponentInParent<PlayerController>();
-                // Debug.Log(_InspectObject.hitInfo.transform.gameObject.name);
-                playerInRange = true;
-            }   
+                if(_InspectObject.objectHit)
+                {
+                    _PlayerController = _InspectObject.GetComponentInParent<PlayerController>();
+                    // Debug.Log(_InspectObject.hitInfo.transform.gameObject.name);
+                    playerInRange = true;
+                }   
+            }
         }
     }
 
