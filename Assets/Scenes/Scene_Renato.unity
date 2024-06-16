@@ -4354,7 +4354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputManager: {fileID: 60883251}
-  mouseSens: 2
+  mouseSens: 0.25
   player: {fileID: 60883245}
 --- !u!1 &966314724
 GameObject:
