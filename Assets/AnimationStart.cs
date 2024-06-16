@@ -11,6 +11,9 @@ public class AnimationStart : MonoBehaviour
 
     public float waitTimeBeforeFade = 8f; // Time to wait before starting the fade
     public float fadeDuration = 2f; // Duration of the fade
+    public GameObject UIelement;
+    public PlayerInteraction _PlayerInteraction;
+    private bool animStart;
 
     void Start()
     {
@@ -25,23 +28,63 @@ public class AnimationStart : MonoBehaviour
         
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider collider)
     {
-        Debug.Log("in");
-        if (other.gameObject.tag == "Player")
+        if(collider.CompareTag("Player"))
         {
-            if (Input.GetKeyDown(KeyCode.P))
+            if(!animStart) 
             {
-                cutscene.SetActive(true);
-                StartCoroutine(HandleCutscene());
+                // Pop up UI
+                UIelement.SetActive(true);
+                
+                // Drop object, just as usual I guess
+
+                // Reference to the player interaction to gain access to the interactable object
+                if(collider.TryGetComponent<PlayerInteraction>(out var interaction))
+                {
+                    _PlayerInteraction = interaction;
+                    GameObject obj = _PlayerInteraction._Interactable.gameObject;
+
+                    // Check if the object is released
+                    if(_PlayerInteraction._Interactable.objectReleased)
+                    {
+                        // Start animation
+                        cutscene.SetActive(true);
+                        StartCoroutine(HandleCutscene()); 
+                        obj.SetActive(false);
+                        UIelement.SetActive(false);
+                    }
+                }
             }
         }
     }
+
+    private void OnTriggerExit(Collider collider) 
+    {
+        if(collider.CompareTag("Player"))
+        {
+            UIelement.SetActive(false);
+        }
+    }
+
+    // private void OnTriggerStay(Collider other)
+    // {
+    //     Debug.Log("in");
+    //     if (other.gameObject.tag == "Player")
+    //     {
+    //         if (Input.GetKeyDown(KeyCode.P))
+    //         {
+    //             cutscene.SetActive(true);
+    //             StartCoroutine(HandleCutscene());
+    //         }
+    //     }
+    // }
 
     private IEnumerator HandleCutscene()
     {
         yield return new WaitForSeconds(waitTimeBeforeFade); // Wait for the specified time
 
+        animStart = true;
         fadeImage.gameObject.SetActive(true); // Enable the image
 
         float elapsedTime = 0f;

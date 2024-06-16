@@ -180,6 +180,8 @@ public class Grabable : MonoBehaviour
                 // if(sphereCol.radius != grabRadius)
                 //     sphereCol.radius = grabRadius;
             }
+
+            _Interactable.objectReleased = true;
         } 
     }
 

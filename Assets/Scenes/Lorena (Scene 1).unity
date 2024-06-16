@@ -352,7 +352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &454663149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,6 +369,8 @@ MonoBehaviour:
   nextSceneName: Rui feet
   waitTimeBeforeFade: 14
   fadeDuration: 2
+  UIelement: {fileID: 0}
+  _PlayerInteraction: {fileID: 0}
 --- !u!65 &454663150
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -536,6 +538,7 @@ GameObject:
   - component: {fileID: 576425099}
   - component: {fileID: 576425102}
   - component: {fileID: 576425103}
+  - component: {fileID: 576425104}
   m_Layer: 4
   m_Name: Water
   m_TagString: Interactable
@@ -640,12 +643,30 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10.26, y: 0.1, z: 10}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 17.63345, y: 6.915375, z: 16.937597}
+  m_Center: {x: -1.0171021, y: 3.4076877, z: 0.3481056}
+--- !u!114 &576425104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 576425097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7b887469bd101f4f805a1cb6b8c4677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeImage: {fileID: 1516635294}
+  nextSceneName: Rui feet
+  waitTimeBeforeFade: 14
+  fadeDuration: 2
+  UIelement: {fileID: 874867025}
+  _PlayerInteraction: {fileID: 0}
 --- !u!1 &588320168
 GameObject:
   m_ObjectHideFlags: 0
@@ -1171,8 +1192,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -447}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 5, y: -322.60577}
+  m_SizeDelta: {x: 60.5075, y: 54.7885}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &874867027
 MonoBehaviour:
@@ -11235,7 +11256,7 @@ RenderTexture:
   m_TextureSettings:
     serializedVersion: 2
     m_FilterMode: 1
-    m_Aniso: 1
+    m_Aniso: 0
     m_MipBias: 0
     m_WrapU: 1
     m_WrapV: 1
@@ -11339,11 +11360,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6512795093213923895, guid: ad81b63bbde5d964ab1d217aac42190f, type: 3}
       propertyPath: distance
-      value: 10
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6512795093213923895, guid: ad81b63bbde5d964ab1d217aac42190f, type: 3}
       propertyPath: detectionRadius
-      value: 3
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7058854158408497248, guid: ad81b63bbde5d964ab1d217aac42190f, type: 3}
       propertyPath: m_Enabled
@@ -11375,7 +11396,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9107094626028404624, guid: ad81b63bbde5d964ab1d217aac42190f, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.41651148
+      value: 0.4165115
       objectReference: {fileID: 0}
     - target: {fileID: 9107094626028404624, guid: ad81b63bbde5d964ab1d217aac42190f, type: 3}
       propertyPath: m_LocalRotation.z
@@ -11725,13 +11746,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20b9488e8346e6445b175d59f4d2cd5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Offset: 0.01
-  m_LayerMask: -1
-  m_Scope: 0
-  m_Renderers: []
-  m_TextureScale: 1
-  m_AllowHDR: 0
-  m_AllowMSAA: 0
 --- !u!114 &1881396928
 MonoBehaviour:
   m_ObjectHideFlags: 0

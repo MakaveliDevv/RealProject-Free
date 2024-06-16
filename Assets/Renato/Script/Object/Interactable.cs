@@ -25,8 +25,8 @@ public class Interactable : MonoBehaviour
     // Booleans
     [HideInInspector] public bool playerInRange;
     [HideInInspector] public bool objectPickedup;
-    [HideInInspector] public bool objectReleased;
     [HideInInspector] public bool ableToInspect;
+    public bool objectReleased;
     [HideInInspector] public bool releaseAfterInspect;
     [HideInInspector] public bool grabAfterInspect;
 
