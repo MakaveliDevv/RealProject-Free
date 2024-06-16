@@ -33,13 +33,13 @@ public class PlayerController : MonoBehaviour
     public bool ableToLookAround;
 
     // Camera
-    [Header("Camera Stuff")]
+    /*[Header("Camera Stuff")]
     public Vector3 initialCamPos;
     [SerializeField] private float cameraOffset = -.5f;
     [SerializeField] private float cameraSwayAmount = 0.1f;
     [SerializeField] private float cameraSwaySpeed = 2f; 
     public bool shake;
-    private bool lockstate;
+    private bool lockstate;*/
 
     // Mouse look
     [Header("Mouse Look")]
@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         _InspectObject = cam.gameObject.GetComponent<InspectObject>();
 
-        initialCamPos = new(cam.transform.localPosition.x, cam.transform.localPosition.y, cam.transform.localPosition.z);
+        //initialCamPos = new(cam.transform.localPosition.x, cam.transform.localPosition.y, cam.transform.localPosition.z);
         Cursor.lockState = CursorLockMode.Locked;
 
         ableToLookAround = true;
@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate() 
     {
-        CameraShake();
+        //CameraShake();
         if(!_InspectObject.inspectMode) 
         {
             MouseLook();
@@ -84,12 +84,12 @@ public class PlayerController : MonoBehaviour
         if(Cursor.lockState == CursorLockMode.Locked) 
         {
             Cursor.lockState = CursorLockMode.None;
-            lockstate = true;
+            //lockstate = true;
         }
         else if(Cursor.lockState == CursorLockMode.None)
         {
             Cursor.lockState = CursorLockMode.Locked;
-            lockstate = false;
+            //lockstate = false;
         }
     }
     
@@ -124,7 +124,7 @@ public class PlayerController : MonoBehaviour
     void Moving()
     {
         cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
-        if(inspectObject.inspectMode || lockstate)
+        if(inspectObject.inspectMode)
             return;        
             
         ApplyGravity();
@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
 
         if (controller.velocity.sqrMagnitude > 0.01f)
         {
-            cam.transform.localPosition = initialCamPos;
+            //cam.transform.localPosition = initialCamPos;
 
             accumulated_distance += controller.velocity.magnitude * Time.deltaTime;
             if (accumulated_distance > stepDistance)
@@ -153,10 +153,10 @@ public class PlayerController : MonoBehaviour
                 if (stepAmount >= previousStepAmount)
                 {
                     idle = false;
-                    shake = false;
+                    //shake = false;
                     moving = true;
 
-                    StartCoroutine(HeadBobbing(initialCamPos, cam));
+                    //StartCoroutine(HeadBobbing(initialCamPos, cam));
                 }
 
                 accumulated_distance = 0f;
@@ -166,7 +166,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             moving = false;
-            shake = true;
+            //shake = true;
             idle = true;
         }
     }
@@ -202,7 +202,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void CameraShake() 
+   /* private void CameraShake() 
     {
         cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
         if(inspectObject.inspectMode)
@@ -218,7 +218,7 @@ public class PlayerController : MonoBehaviour
             cam.transform.localPosition = cameraSway;
             shake = true;
         }
-    }
+    }*/
 
     public void Jump() 
     {

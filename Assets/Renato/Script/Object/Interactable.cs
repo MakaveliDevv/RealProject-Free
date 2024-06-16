@@ -34,6 +34,7 @@ public class Interactable : MonoBehaviour
     [SerializeField] protected float interactRadius = 1.25f;
 
     // Camera stuff
+    public GameObject interactionUI;
     private Vector3 frozenCameraPosition;
     private Quaternion frozenCameraRotation;
     [SerializeField] private float distanceFromCamera = 2f;
@@ -78,9 +79,12 @@ public class Interactable : MonoBehaviour
                         {
                             _InspectObject.inspectObject = _InspectObject.hitInfo.transform;
                             _InspectObject.objectHit = true;
+                            interactionUI.SetActive(true);
                         }
                         else
+                        {
                             _InspectObject.objectHit = false;
+                        }
                     }
                 }
                 else
@@ -88,6 +92,7 @@ public class Interactable : MonoBehaviour
                     _InspectObject.objectHit = false; // Set objectHit to false if no object is detected
                     playerInRange = false;
                     ableToInspect = false;
+                    interactionUI.SetActive(false);
                 }
 
                 if(_InspectObject.objectHit)
@@ -117,10 +122,10 @@ public class Interactable : MonoBehaviour
             grabAfterInspect = false;
             _Grabable.grabable = true;
 
-            _PlayerInteraction.GetComponent<PlayerController>().shake = false;
+           // _PlayerInteraction.GetComponent<PlayerController>().shake = false;
             _PlayerInteraction.GetComponent<PlayerController>().ableToLookAround = false;
             
-            camera.transform.localPosition = _PlayerController.initialCamPos;
+           // camera.transform.localPosition = _PlayerController.initialCamPos;
 
             // Freeze the camera on the current position
             frozenCameraPosition = camera.transform.position;
@@ -155,5 +160,10 @@ public class Interactable : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         _InspectObject.inspectMode = false;
+    }
+
+    private void ShowButton()
+    {
+        
     }
 }

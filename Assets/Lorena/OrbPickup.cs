@@ -4,34 +4,28 @@ using UnityEngine;
 using TMPro;
 public class OrbPickup : MonoBehaviour
 {
-    private GameObject orb;
     private bool isActive = false;
-    public GameObject textGameObj;
+    public GameObject buttonImage;
 
     void Start()
     {
-        orb = GameObject.Find("Joint/PlayerCamera/OrbPickup");
-        if (orb != null)
-            Debug.Log(orb);
-        textGameObj.SetActive(false);
-        orb.SetActive(false);
+        buttonImage.SetActive(false);
     }
 
     void Update()
     {
         if (isActive == true && Input.GetKeyDown(KeyCode.E))
         {
-            orb.SetActive(true);
-            textGameObj.SetActive(false);
+            buttonImage.SetActive(false);
         }
     }
 
     private void OnTriggerEnter(Collider col)
     {
-        if(col.gameObject.name == "FirstPersonController")
+        if(col.gameObject.tag == "Player")
         {
             Debug.Log("im in");
-            textGameObj.SetActive(true);
+            buttonImage.SetActive(true);
             isActive = true;
         }
     }
