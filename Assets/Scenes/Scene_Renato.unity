@@ -806,6 +806,7 @@ GameObject:
   - component: {fileID: 60883247}
   - component: {fileID: 60883249}
   - component: {fileID: 60883250}
+  - component: {fileID: 60883251}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -895,7 +896,7 @@ Transform:
   m_GameObject: {fileID: 60883239}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 1, z: -0.84}
+  m_LocalPosition: {x: -0.69, y: 1, z: -0.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1162,6 +1163,38 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 5821f226-9c48-4f4d-8c84-b980b11f33ee
     m_ActionName: InputAction/ReloadScene Action[/DualShock4GamepadHID/select]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11500000, guid: f3c6725bca199cc4395a42d036f4225e, type: 3}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: b7a423bb-9456-4ea5-9376-4ec6bd459550
+    m_ActionName: InputAction/MouseX[/Mouse/delta/x]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11500000, guid: f3c6725bca199cc4395a42d036f4225e, type: 3}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 4b97ddad-de37-47cc-9f32-f400b05bfa32
+    m_ActionName: InputAction/MouseY[/Mouse/delta/y]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: InputAction
@@ -1197,6 +1230,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   space: 1
   _Grabables: []
+--- !u!114 &60883251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60883239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a74b929c067584148843afd23de47980, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &64210333
 GameObject:
   m_ObjectHideFlags: 0
@@ -4147,6 +4192,7 @@ GameObject:
   - component: {fileID: 961739751}
   - component: {fileID: 961739750}
   - component: {fileID: 961739754}
+  - component: {fileID: 961739755}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4295,6 +4341,21 @@ MonoBehaviour:
   inspectMode: 0
   rayExists: 0
   distance: 3
+--- !u!114 &961739755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 961739749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24fe9e7c4fe599d4b8c52cff6f177e70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputManager: {fileID: 60883251}
+  mouseSens: 2
+  player: {fileID: 60883245}
 --- !u!1 &966314724
 GameObject:
   m_ObjectHideFlags: 0

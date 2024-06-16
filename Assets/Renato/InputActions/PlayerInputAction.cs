@@ -107,6 +107,24 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MouseX"",
+                    ""type"": ""Value"",
+                    ""id"": ""b7a423bb-9456-4ea5-9376-4ec6bd459550"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MouseY"",
+                    ""type"": ""Value"",
+                    ""id"": ""4b97ddad-de37-47cc-9f32-f400b05bfa32"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -188,6 +206,83 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
+                    ""name"": ""3D Vector"",
+                    ""id"": ""9a788836-70b7-4dd0-b83e-349f9cccff4b"",
+                    ""path"": ""3DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Action"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""12872f94-f62e-48dd-ab1d-cb9d59b7d64e"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""d805e458-6a3d-48e9-8546-c18397b6dd05"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""c62303b9-53af-469c-864e-8ac721e22fe4"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""0b2fbf5f-98bf-4279-9b24-ad2b50770a4c"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""forward"",
+                    ""id"": ""bac3448a-fa69-49a9-93d1-eba1a73b8ffb"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""backward"",
+                    ""id"": ""a9b65457-1e2b-4592-a027-6313519239b6"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
                     ""name"": ""2D Vector"",
                     ""id"": ""f0330f81-36af-4628-bc5f-f8e820c6b49c"",
                     ""path"": ""2DVector"",
@@ -255,8 +350,30 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""72e9c1aa-8100-428e-b032-4bf567af3ea9"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""0a3512ca-261b-49eb-b633-f82d53073c5d"",
                     ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inspect Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d04ce15a-71ea-41d3-b4f5-b5d92c19088f"",
+                    ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -332,8 +449,30 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""d25e9280-a7ab-4526-a778-633db0401b77"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Relase Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""69cb7d1d-e0bb-4c88-a929-367d399ff768"",
                     ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""540daab2-ad3f-4a13-8646-500be52987c4"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -354,12 +493,56 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""6f29472f-817b-4866-852d-d1bf9a7389d6"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lock/Unlock Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""f154c95a-a20a-44fa-a5bb-d0f18b611429"",
                     ""path"": ""<Gamepad>/select"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ReloadScene Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aae4494d-3bd0-4e1f-b2fb-5ff1875e17e8"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ReloadScene Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""458ef4a5-376f-43af-8163-8bd3e2741215"",
+                    ""path"": ""<Mouse>/delta/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseX"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""40bea145-c288-4cbd-a981-c436f264bcf1"",
+                    ""path"": ""<Mouse>/delta/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseY"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -379,6 +562,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_InputAction_JumpAction = m_InputAction.FindAction("Jump Action", throwIfNotFound: true);
         m_InputAction_LockUnlockAction = m_InputAction.FindAction("Lock/Unlock Action", throwIfNotFound: true);
         m_InputAction_ReloadSceneAction = m_InputAction.FindAction("ReloadScene Action", throwIfNotFound: true);
+        m_InputAction_MouseX = m_InputAction.FindAction("MouseX", throwIfNotFound: true);
+        m_InputAction_MouseY = m_InputAction.FindAction("MouseY", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -449,6 +634,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_InputAction_JumpAction;
     private readonly InputAction m_InputAction_LockUnlockAction;
     private readonly InputAction m_InputAction_ReloadSceneAction;
+    private readonly InputAction m_InputAction_MouseX;
+    private readonly InputAction m_InputAction_MouseY;
     public struct InputActionActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -462,6 +649,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         public InputAction @JumpAction => m_Wrapper.m_InputAction_JumpAction;
         public InputAction @LockUnlockAction => m_Wrapper.m_InputAction_LockUnlockAction;
         public InputAction @ReloadSceneAction => m_Wrapper.m_InputAction_ReloadSceneAction;
+        public InputAction @MouseX => m_Wrapper.m_InputAction_MouseX;
+        public InputAction @MouseY => m_Wrapper.m_InputAction_MouseY;
         public InputActionMap Get() { return m_Wrapper.m_InputAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -498,6 +687,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @ReloadSceneAction.started += instance.OnReloadSceneAction;
             @ReloadSceneAction.performed += instance.OnReloadSceneAction;
             @ReloadSceneAction.canceled += instance.OnReloadSceneAction;
+            @MouseX.started += instance.OnMouseX;
+            @MouseX.performed += instance.OnMouseX;
+            @MouseX.canceled += instance.OnMouseX;
+            @MouseY.started += instance.OnMouseY;
+            @MouseY.performed += instance.OnMouseY;
+            @MouseY.canceled += instance.OnMouseY;
         }
 
         private void UnregisterCallbacks(IInputActionActions instance)
@@ -529,6 +724,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @ReloadSceneAction.started -= instance.OnReloadSceneAction;
             @ReloadSceneAction.performed -= instance.OnReloadSceneAction;
             @ReloadSceneAction.canceled -= instance.OnReloadSceneAction;
+            @MouseX.started -= instance.OnMouseX;
+            @MouseX.performed -= instance.OnMouseX;
+            @MouseX.canceled -= instance.OnMouseX;
+            @MouseY.started -= instance.OnMouseY;
+            @MouseY.performed -= instance.OnMouseY;
+            @MouseY.canceled -= instance.OnMouseY;
         }
 
         public void RemoveCallbacks(IInputActionActions instance)
@@ -557,5 +758,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         void OnJumpAction(InputAction.CallbackContext context);
         void OnLockUnlockAction(InputAction.CallbackContext context);
         void OnReloadSceneAction(InputAction.CallbackContext context);
+        void OnMouseX(InputAction.CallbackContext context);
+        void OnMouseY(InputAction.CallbackContext context);
     }
 }

@@ -28,6 +28,17 @@ public class InputHandler : MonoBehaviour
         }
     }
 
+    public void LookAroundWithMouseInput(InputAction.CallbackContext ctx)
+    {
+        // if(_Player != null)
+        // {
+        //     if(ctx.performed)
+        //     {
+        //         _Player
+        //     }
+        // }
+    }
+
     public void LookAroundInput(InputAction.CallbackContext ctx) 
     {
         if(_Player != null) 
