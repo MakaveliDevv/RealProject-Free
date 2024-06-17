@@ -3,25 +3,18 @@ using UnityEngine;
 
 public class OrbMovement : MonoBehaviour
 {
-    [Header("Scripts")]
-    [SerializeField] private PlayerController _PlayerController;
-    [SerializeField] private PlayerInteraction _PlayerInteraction;
-    [SerializeField] private Grabable _Grabable;
-    [SerializeField] private Moveable _Moveable;
-
     [Header("List")]
-    [SerializeField] public List<Transform> controlPoints;
-    [SerializeField] private List<Moveable> moveableObjects = new();
+    public List<Transform> controlPoints;
+    [SerializeField] private List<Star> stars = new();
 
     [Header("GameObject")]
     [SerializeField] private GameObject moveableGameObject;
 
     [Header("Float")]
     public float threshold = 0.1f;
-    public float minimumDistance = 1.0f; // Minimum distance between objects
+    public float minimumDistance = 15.0f; // Minimum distance between objects
 
     [Header("Bool")]
-    [SerializeField] private bool playerInRange;
     public float offsetDistance;
 
     #region Singleton
@@ -35,7 +28,7 @@ public class OrbMovement : MonoBehaviour
 
     private void Update()
     {
-        if (moveableObjects.Count == 0 || (controlPoints.Count < 4 && !playerInRange))
+        if (stars.Count == 0 || (controlPoints.Count < 4))
             return;
 
         MoveObject();  
@@ -43,42 +36,45 @@ public class OrbMovement : MonoBehaviour
 
     private void MoveObject() 
     {
-        for (int i = 0; i < moveableObjects.Count; i++)
+        for (int i = 0; i < stars.Count; i++)
         {
             // Assign the added object
-            Moveable moveable = moveableObjects[i];
+            Star star = stars[i];
 
             // Set the starting position to the first control point when an object is added
-            if (!moveable.hasStartingPosition)
+            if (!star.hasStartingPosition)
             {
                 if (i == 0)
                 {
-                    moveable.startingPosition = controlPoints[0].position;  
+                    star.startingPosition = controlPoints[0].position;  
                     // Debug.Log($"Object {i} starting position: {moveable.startingPosition}");
                 }
                 else
                 {
                     Vector3 offsetDirectionNormalized = (controlPoints[1].position - controlPoints[0].position).normalized;
                     Vector3 offsetStartingPosition = controlPoints[0].position + offsetDistance * offsetDirectionNormalized;
-                    moveable.startingPosition = offsetStartingPosition;
+                    star.startingPosition = offsetStartingPosition;
                     // Debug.Log($"Object {i} offset direction normalized: {offsetDirectionNormalized}");
                     // Debug.Log($"Object {i} offset starting position: {moveable.startingPosition}");
                 }
 
-                moveable.hasStartingPosition = true;
-                moveable.isMoving = true;
-                moveable.interpolateAmount = 0; // Start all objects with 0 interpolate amount
-                moveable.isInitializing = true; // Mark the object as initializing
-                moveable.objectTransform.position = moveable.startingPosition; // Set the initial position
+                star.hasStartingPosition = true;
+                star.isMoving = true;
+                star.interpolateAmount = 0; // Start all objects with 0 interpolate amount
+                star.isInitializing = true; // Mark the object as initializing
+                star.objectTransform.position = star.startingPosition; // Set the initial position
             }
 
             // Ensure the object is moving
-            if (!moveable.isMoving)
+            if (!star.isMoving)
                 continue;
 
-            moveable.interpolateAmount = (moveable.interpolateAmount + Time.deltaTime / controlPoints.Count) % 1f;
+            // Calculate the target control point index for this star
+            int targetControlPointIndex = controlPoints.Count - 1 - i;
+
+            star.interpolateAmount = (star.interpolateAmount + Time.deltaTime / controlPoints.Count) % 1f;
             int segmentCount = controlPoints.Count;
-            float t = moveable.interpolateAmount * segmentCount;
+            float t = star.interpolateAmount * segmentCount;
             int currentPoint = Mathf.FloorToInt(t);
             t -= currentPoint;
 
@@ -89,29 +85,29 @@ public class OrbMovement : MonoBehaviour
                 controlPoints[(currentPoint + 2) % segmentCount].position,
                 t);
 
-            moveable.objectTransform.position = position;
+            star.objectTransform.position = position;
 
-            // Check if the object has returned to the starting position
-            if (!moveable.inGravitationalCircle && moveable.interpolateAmount >= 0.9f && Vector3.Distance(moveable.objectTransform.position, moveable.startingPosition) <= threshold)
+            // Check if the object has reached its designated control point
+            if (!star.inGravitationalCircle && Vector3.Distance(star.objectTransform.position, controlPoints[targetControlPointIndex].position) <= threshold)
             {
-                moveable.objectTransform.position = moveable.startingPosition;
-                moveable.isMoving = false;
-                moveable.inGravitationalCircle = true;
-                moveable.interpolateAmount = 0;
-                // Debug.Log($"Object {i} has returned to the starting position.");
+                star.objectTransform.position = controlPoints[targetControlPointIndex].position;
+                star.isMoving = false;
+                star.inGravitationalCircle = true;
+                star.interpolateAmount = 0;
+                // Debug.Log($"Object {i} has reached control point {targetControlPointIndex}.");
             }
 
             // Maintain minimum distance between objects
-            if (!moveable.isInitializing)
+            if (!star.isInitializing)
             {
-                for (int j = 0; j < moveableObjects.Count; j++)
+                for (int j = 0; j < stars.Count; j++)
                 {
                     if (i != j)
                     {
-                        Moveable otherMoveable = moveableObjects[j];
-                        if (Vector3.Distance(moveable.objectTransform.position, otherMoveable.objectTransform.position) <= minimumDistance)
+                        Star otherMoveable = stars[j];
+                        if (Vector3.Distance(star.objectTransform.position, otherMoveable.objectTransform.position) <= minimumDistance)
                         {
-                            moveable.isMoving = false;
+                            star.isMoving = false;
                             // Debug.Log($"Object {i} stopped to maintain minimum distance from Object {j}.");
                             break; // Exit the loop as soon as we stop the object
                         }
@@ -120,13 +116,142 @@ public class OrbMovement : MonoBehaviour
             }
 
             // Switch off the initializing phase after the object has moved away from the starting position
-            if (moveable.isInitializing && Vector3.Distance(moveable.objectTransform.position, moveable.startingPosition) > minimumDistance)
+            if (star.isInitializing && Vector3.Distance(star.objectTransform.position, star.startingPosition) > minimumDistance)
             {
-                moveable.isInitializing = false;
+                star.isInitializing = false;
                 // Debug.Log($"Object {i} initialization phase ended.");
             }
         }
     }
+
+    // private void MoveObject() 
+    // {
+    //     for (int i = 0; i < stars.Count; i++)
+    //     {
+    //         // Assign the added object
+    //         Star star = stars[i];
+
+    //         // Set the starting position to the first control point when an object is added
+    //         if (!star.hasStartingPosition)
+    //         {
+    //             if (i == 0)
+    //             {
+    //                 star.startingPosition = controlPoints[0].position;  
+    //                 // Debug.Log($"Object {i} starting position: {moveable.startingPosition}");
+    //             }
+    //             else
+    //             {
+    //                 Vector3 offsetDirectionNormalized = (controlPoints[1].position - controlPoints[0].position).normalized;
+    //                 Vector3 offsetStartingPosition = controlPoints[0].position + offsetDistance * offsetDirectionNormalized;
+    //                 star.startingPosition = offsetStartingPosition;
+    //                 // Debug.Log($"Object {i} offset direction normalized: {offsetDirectionNormalized}");
+    //                 // Debug.Log($"Object {i} offset starting position: {moveable.startingPosition}");
+    //             }
+
+    //             star.hasStartingPosition = true;
+    //             star.isMoving = true;
+    //             star.interpolateAmount = 0; // Start all objects with 0 interpolate amount
+    //             star.isInitializing = true; // Mark the object as initializing
+    //             star.objectTransform.position = star.startingPosition; // Set the initial position
+    //         }
+
+    //         // Ensure the object is moving
+    //         if (!star.isMoving)
+    //             continue;
+
+    //         star.interpolateAmount = (star.interpolateAmount + Time.deltaTime / controlPoints.Count) % 1f;
+    //         int segmentCount = controlPoints.Count;
+    //         float t = star.interpolateAmount * segmentCount;
+    //         int currentPoint = Mathf.FloorToInt(t);
+    //         t -= currentPoint;
+
+    //         Vector3 position = CatmullRom(
+    //             controlPoints[(currentPoint - 1 + segmentCount) % segmentCount].position,
+    //             controlPoints[currentPoint % segmentCount].position,
+    //             controlPoints[(currentPoint + 1) % segmentCount].position,
+    //             controlPoints[(currentPoint + 2) % segmentCount].position,
+    //             t);
+
+    //         star.objectTransform.position = position;
+
+    //         // Check if the object has returned to the starting position
+    //         if (!star.inGravitationalCircle && star.interpolateAmount >= 0.9f && Vector3.Distance(star.objectTransform.position, star.startingPosition) <= threshold)
+    //         {
+    //             star.objectTransform.position = star.startingPosition;
+    //             star.isMoving = false;
+    //             star.inGravitationalCircle = true;
+    //             star.interpolateAmount = 0;
+    //             // Debug.Log($"Object {i} has returned to the starting position.");
+    //         }
+
+    //         // Maintain minimum distance between objects
+    //         if (!star.isInitializing)
+    //         {
+    //             for (int j = 0; j < stars.Count; j++)
+    //             {
+    //                 if (i != j)
+    //                 {
+    //                     Star otherMoveable = stars[j];
+    //                     if (Vector3.Distance(star.objectTransform.position, otherMoveable.objectTransform.position) <= minimumDistance)
+    //                     {
+    //                         star.isMoving = false;
+    //                         // Debug.Log($"Object {i} stopped to maintain minimum distance from Object {j}.");
+    //                         break; // Exit the loop as soon as we stop the object
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+    //         // Switch off the initializing phase after the object has moved away from the starting position
+    //         if (star.isInitializing && Vector3.Distance(star.objectTransform.position, star.startingPosition) > minimumDistance)
+    //         {
+    //             star.isInitializing = false;
+    //             // Debug.Log($"Object {i} initialization phase ended.");
+    //         }
+    //     }
+    // }
+
+    // private void MoveObject() 
+    // {
+    //     for (int i = 0; i < stars.Count; i++)
+    //     {
+    //         int stopIndex = controlPoints.Count - 1 - i;
+    //         Star star = stars[i];
+
+    //         if (!star.hasStartingPosition)
+    //         {
+    //             // Calculate the index of the control point to stop at
+    //             stopIndex = Mathf.Clamp(stopIndex, 0, controlPoints.Count - 1); // Ensure within bounds
+    //             Debug.Log(stopIndex);
+
+    //             star.startingPosition = controlPoints[stopIndex].position;
+    //             Debug.Log(star.startingPosition);
+    //             star.hasStartingPosition = true;
+    //             star.isMoving = true;
+    //             star.interpolateAmount = 0;
+    //             star.isInitializing = true;
+    //             star.objectTransform.position = star.startingPosition;
+    //         }
+
+    //         if (!star.isMoving)
+    //             continue;
+
+    //         star.interpolateAmount = (star.interpolateAmount + Time.deltaTime / controlPoints.Count) % 1f;
+    //         int segmentCount = controlPoints.Count;
+    //         float t = star.interpolateAmount * segmentCount;
+    //         int currentPoint = Mathf.FloorToInt(t);
+    //         t -= currentPoint;
+
+    //         Vector3 position = CatmullRom(
+    //             controlPoints[(currentPoint - 1 + segmentCount) % segmentCount].position,
+    //             controlPoints[currentPoint % segmentCount].position,
+    //             controlPoints[(currentPoint + 1) % segmentCount].position,
+    //             controlPoints[(currentPoint + 2) % segmentCount].position,
+    //             t);
+
+    //         star.objectTransform.position = position;
+    //     }
+    // }
  
     private Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
     {
@@ -142,103 +267,13 @@ public class OrbMovement : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        // If the player has to place the orbs in a path
-        if (collider.TryGetComponent<PlayerController>(out var playerController))
-        {
-            _PlayerController = playerController;
-            playerInRange = true;
-
-            if (_PlayerController.TryGetComponent<PlayerInteraction>(out var playerInteraction))
-            {
-                _PlayerInteraction = playerInteraction;
-
-                Interact();
-            }
-        }
-
-        // If the object travels to the path
         if(collider.CompareTag("Star")) 
         {
             Debug.Log("Found the star");
-            if(collider.TryGetComponent<Moveable>(out var star))
+            if(collider.TryGetComponent<Star>(out var star))
             {
-                moveableObjects.Add(star);
+                stars.Add(star);
             }
         } 
     }
-
-    private void Interact()
-    {
-        if (playerInRange)
-        {
-            // if (_PlayerController.TryGetComponent<PlayerInteraction>(out var playerInteraction))
-            // {
-                // _PlayerInteraction = playerInteraction;
-
-                // Fetch the player interaction script to initialize the gameobject
-                moveableGameObject = _PlayerInteraction._Interactable.gameObject;
-
-                if (moveableGameObject.TryGetComponent<SphereCollider>(out var sphereCollider))
-                    sphereCollider.enabled = true;
-
-                Grabable grabable = moveableGameObject.GetComponentInChildren<Grabable>();
-                _Grabable = grabable;
-                if (_Grabable != null)
-                {
-                    _Grabable.sphereCol.enabled = true;
-                    moveableGameObject.GetComponent<Interactable>().objectPickedup = false;
-                    moveableGameObject.transform.SetParent(null);
-
-                    // Add it to the moveableObjects list
-                    if (!moveableObjects.Exists(m => m.objectTransform == moveableGameObject.transform))
-                    {
-                        moveableGameObject.TryGetComponent<Moveable>(out var moveable);
-                        if (moveable != null) // Ensure the object has a Moveable component
-                        {
-                            moveableObjects.Add(moveable);
-                            Inventory.instance._Grabables.Clear();
-                            // Debug.Log($"Added new Moveable Object. Total count: {moveableObjects.Count}");
-                        }
-                    }
-                }
-            // }
-        }
-    }
-
-    // private void Interact()
-    // {
-    //     if (playerInRange)
-    //     {
-    //         if (_PlayerController.TryGetComponent<PlayerInteraction>(out var playerInteraction))
-    //         {
-    //             _PlayerInteraction = playerInteraction;
-
-    //             // Fetch the player interaction script to initialize the gameobject
-    //             moveableGameObject = playerInteraction._Interactable.gameObject;
-
-    //             if (moveableGameObject.TryGetComponent<SphereCollider>(out var sphereCollider))
-    //                 sphereCollider.enabled = true;
-
-    //             Grabable grabable = moveableGameObject.GetComponentInChildren<Grabable>();
-    //             _Grabable = grabable;
-    //             if (_Grabable != null)
-    //             {
-    //                 _Grabable.sphereCol.enabled = true;
-    //                 moveableGameObject.GetComponent<Interactable>().objectPickedup = false;
-    //                 moveableGameObject.transform.SetParent(null);
-
-    //                 // Add it to the moveableObjects list
-    //                 if (!moveableObjects.Exists(m => m.objectTransform == moveableGameObject.transform))
-    //                 {
-    //                     moveableGameObject.TryGetComponent<Moveable>(out var moveable);
-    //                     if (moveable != null) // Ensure the object has a Moveable component
-    //                     {
-    //                         moveableObjects.Add(moveable);
-    //                         Inventory.instance._Grabables.Clear();
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 }

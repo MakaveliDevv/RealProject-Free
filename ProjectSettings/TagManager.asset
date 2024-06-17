@@ -10,6 +10,11 @@ TagManager:
   - DefualtCollider
   - Interactable2
   - Text
+  - AssemblePoint
+  - Footstep
+  - Area
+  - Star
+  - Sun
   layers:
   - Default
   - TransparentFX

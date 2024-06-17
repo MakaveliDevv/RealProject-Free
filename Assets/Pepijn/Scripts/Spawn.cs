@@ -12,8 +12,6 @@ public class Spawn : MonoBehaviour
     private List<GameObject> spawnedObjects = new();
 
     [SerializeField] private Transform gameManager;
-
-    private Coroutine destroyCoroutine;
     private Dictionary<GameObject, Coroutine> destroyCoroutines = new Dictionary<GameObject, Coroutine>();
 
     void Start()
@@ -40,12 +38,15 @@ public class Spawn : MonoBehaviour
     {
         Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
+        Star star = prefab.GetComponent<Star>();
+
         GameObject spawnedObj = Instantiate(prefab, randomSpawnPoint.position, Quaternion.identity);
         spawnedObjects.Add(spawnedObj);
         spawnedObj.transform.SetParent(gameManager);
 
         Coroutine destroyCoroutine = StartCoroutine(DestroyAfterTime(spawnedObj, objectDuration));
         destroyCoroutines.Add(spawnedObj, destroyCoroutine);
+        star.ableToMove = true;
     }
 
     private IEnumerator SpawnObjects() 

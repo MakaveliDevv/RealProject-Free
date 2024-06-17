@@ -23,18 +23,32 @@ public class FootController : NetworkBehaviour
     public float minY = -38f;
     public float maxY = 12f;
 
-    // Vector2 inputVector = Vector2.zero;
-    // Start is called before the first frame update
+    // Visualizer
+    public float minX = -21f;
+    public float maxX = 21f;
+    public float minY = -38f;
+    public float maxY = 12f;
+    
     void Start()
     {
         isFirstStep = true;
         isStepOnCooldown = false;
     }
 
-    // void SetInputVector(Vector2 direction) 
-    // {
-        // inputVector = direction;
-    // }
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+
+        // Draw the outer borders
+        Gizmos.DrawLine(new Vector3(minX, minY, 0), new Vector3(maxX, minY, 0));
+        Gizmos.DrawLine(new Vector3(maxX, minY, 0), new Vector3(maxX, maxY, 0));
+        Gizmos.DrawLine(new Vector3(maxX, maxY, 0), new Vector3(minX, maxY, 0));
+        Gizmos.DrawLine(new Vector3(minX, maxY, 0), new Vector3(minX, minY, 0));
+
+        // Draw the horizontal line to split the areas
+        float midY = (minY + maxY) / 2;
+        Gizmos.DrawLine(new Vector3(minX, midY, 0), new Vector3(maxX, midY, 0));
+    }
 
     void OnDrawGizmos()
     {
@@ -56,7 +70,6 @@ public class FootController : NetworkBehaviour
         if(IsOwner && !isStepOnCooldown && ctx.performed)
         {
             Debug.Log(ctx.performed + ": Left step");
-            // SetInputVector(ctx.ReadValue<Vector2>());
             WalkForward(true);
         }
     }
@@ -66,7 +79,6 @@ public class FootController : NetworkBehaviour
         if(IsOwner && !isStepOnCooldown && ctx.performed)
         {
             Debug.Log(ctx.performed + ": Right step");
-            // SetInputVector(ctx.ReadValue<Vector2>());
             WalkForward(false);
         }
     }
