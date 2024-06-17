@@ -102,7 +102,12 @@ public class Interactable : MonoBehaviour
                     playerInRange = true;
                 }   
             }
+        } 
+        else if(objectPickedup)
+        {
+            interactionUI.SetActive(false);
         }
+        // else (/* if object is picked up and the player is near the water */)
     }
 
     void OnDrawGizmos()
@@ -160,10 +165,5 @@ public class Interactable : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         _InspectObject.inspectMode = false;
-    }
-
-    private void ShowButton()
-    {
-        
     }
 }

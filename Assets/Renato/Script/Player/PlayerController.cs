@@ -33,13 +33,13 @@ public class PlayerController : MonoBehaviour
     public bool ableToLookAround;
 
     // Camera
-    /*[Header("Camera Stuff")]
+    [Header("Camera Stuff")]
     public Vector3 initialCamPos;
     [SerializeField] private float cameraOffset = -.5f;
     [SerializeField] private float cameraSwayAmount = 0.1f;
     [SerializeField] private float cameraSwaySpeed = 2f; 
     public bool shake;
-    private bool lockstate;*/
+    private bool lockstate;
 
     // Mouse look
     [Header("Mouse Look")]
@@ -66,10 +66,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate() 
     {
-        //CameraShake();
+        CameraShake();
         if(!_InspectObject.inspectMode) 
         {
-            MouseLook();
+            LookAround();
             Moving();
         }
     }
@@ -84,12 +84,10 @@ public class PlayerController : MonoBehaviour
         if(Cursor.lockState == CursorLockMode.Locked) 
         {
             Cursor.lockState = CursorLockMode.None;
-            //lockstate = true;
         }
         else if(Cursor.lockState == CursorLockMode.None)
         {
             Cursor.lockState = CursorLockMode.Locked;
-            //lockstate = false;
         }
     }
     
@@ -103,7 +101,7 @@ public class PlayerController : MonoBehaviour
         inputLookVector = rotation;
     }
 
-    void MouseLook()
+    void LookAround()
     {
         float mouseX = inputLookVector.x * mouseSensitivity * Time.deltaTime;
         float mouseY = inputLookVector.y * mouseSensitivity * Time.deltaTime;
@@ -156,7 +154,7 @@ public class PlayerController : MonoBehaviour
                     //shake = false;
                     moving = true;
 
-                    //StartCoroutine(HeadBobbing(initialCamPos, cam));
+                    StartCoroutine(HeadBobbing(initialCamPos, cam));
                 }
 
                 accumulated_distance = 0f;
@@ -202,7 +200,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-   /* private void CameraShake() 
+   private void CameraShake() 
     {
         cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
         if(inspectObject.inspectMode)
@@ -218,7 +216,7 @@ public class PlayerController : MonoBehaviour
             cam.transform.localPosition = cameraSway;
             shake = true;
         }
-    }*/
+    }
 
     public void Jump() 
     {
