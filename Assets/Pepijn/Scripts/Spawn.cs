@@ -17,7 +17,10 @@ public class Spawn : NetworkBehaviour
 
     void Start()
     {
-        StartCoroutine(SpawnObjects());
+        if (ClientScript.instance.clientName == "Wall")
+        {
+            StartCoroutine(SpawnObjects());
+        }
     }
 
     void Update()
@@ -47,7 +50,6 @@ public class Spawn : NetworkBehaviour
         {
             return; // No available prefabs to spawn
         }
-
         // Select a random spawn point and a random prefab from the available list
         Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
         GameObject randomPrefab = availablePrefabs[Random.Range(0, availablePrefabs.Count)]; 
@@ -71,9 +73,13 @@ public class Spawn : NetworkBehaviour
         while (true)
         {
             if (spawnedObjects.Count < maxAmount)
-            {
-                InstantiateObj();
-                yield return new WaitForSeconds(interval);
+            {   
+                if (ClientScript.instance.clientName == "Wall")
+                {
+                    InstantiateObjServerRpc();
+                    yield return new WaitForSeconds(interval);
+                    Debug.Log("spawn star");
+                }
             }
             else 
             {
@@ -88,6 +94,40 @@ public class Spawn : NetworkBehaviour
         spawnedObjects.Remove(obj);
         destroyCoroutines.Remove(obj);
         Destroy(obj);  
+
+    }
+
+    [ServerRpc]
+    void InstantiateObjServerRpc()
+    {
+        // Filter out prefabs that are already spawned
+        List<GameObject> availablePrefabs = new List<GameObject>(prefabs);
+        foreach (var spawned in spawnedObjects)
+        {
+            availablePrefabs.RemoveAll(prefab => prefab.name == spawned.name.Replace("(Clone)", ""));
+        }
+
+        if (availablePrefabs.Count == 0)
+        {
+            return; // No available prefabs to spawn
+        }
+        // Select a random spawn point and a random prefab from the available list
+        Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+        GameObject randomPrefab = availablePrefabs[Random.Range(0, availablePrefabs.Count)]; 
+
+        // Instantiate the selected prefab at the selected spawn point
+        GameObject spawnedObj = Instantiate(randomPrefab, randomSpawnPoint.position, Quaternion.identity);
+        spawnedObj.GetComponent<NetworkObject>().Spawn(true);
+        spawnedObjects.Add(spawnedObj);
+        spawnedObj.transform.SetParent(gameManager);
+
+        // Start the coroutine to destroy the object after the specified duration
+        Coroutine destroyCoroutine = StartCoroutine(DestroyAfterTime(spawnedObj, objectDuration));
+        destroyCoroutines.Add(spawnedObj, destroyCoroutine);
+
+        // Enable movement for the spawned object
+        Star star = spawnedObj.GetComponent<Star>();
+        star.ableToMove = true;
     }
 }
 

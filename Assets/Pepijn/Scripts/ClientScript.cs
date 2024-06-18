@@ -31,25 +31,11 @@ public class ClientScript : NetworkBehaviour
             NetworkManager.StartClient();
         }
 
-        floorCam = GameObject.Find("FloorCam");
-        wallCam = GameObject.Find("Main Camera");
-
-        if (clientName == "Wall")
-        {
-            //Camera.main.transform.position = new Vector3(0, 0, -10);
-            wallCam.gameObject.SetActive(true);
-            floorCam.gameObject.SetActive(false);
-        }
-        else if (clientName == "Floor")
-        {
-            //Camera.main.transform.position = new Vector3(0, -26.8f, -10);
-            floorCam.gameObject.SetActive(true);
-            wallCam.gameObject.SetActive(false);
-        }
+        CameraSetup();
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (SceneManager.GetActiveScene().name == "Footsteps")
+        if (SceneManager.GetActiveScene().name == "Voeten2")
         {
             FootstepSceneSetup();
         }
@@ -58,10 +44,16 @@ public class ClientScript : NetworkBehaviour
         {
             FirstSceneSetup();
         }
+
+        if (SceneManager.GetActiveScene().name == "Canvas")
+        {
+            CanvasSetup();
+        }
     }
 
     void Update()
     {
+        //DEV SHORTCUT
         if (Input.GetKeyDown(KeyCode.P))
         {
             //if (IsServer)
@@ -69,9 +61,9 @@ public class ClientScript : NetworkBehaviour
             string m_SceneName = "";
             if (SceneManager.GetActiveScene().name == "Lorena (Scene 1)")
             {
-                m_SceneName = "Footsteps";
+                m_SceneName = "Voeten2";
             }
-            if (SceneManager.GetActiveScene().name == "Footsteps")
+            if (SceneManager.GetActiveScene().name == "Voeten2")
             {
                 m_SceneName = "Canvas";
             }
@@ -85,38 +77,40 @@ public class ClientScript : NetworkBehaviour
         }
     }
 
-    void FootstepSceneSetup()
+    void CameraSetup()
     {
         floorCam = GameObject.Find("FloorCam");
         wallCam = GameObject.Find("Main Camera");
 
-        if (clientName == "Wall")
+        if (floorCam != null && wallCam != null)
         {
-            //Camera.main.transform.position = new Vector3(0, 0, -10);
-            wallCam.gameObject.SetActive(true);
-            floorCam.gameObject.SetActive(false);
+            if (clientName == "Wall")
+            {
+                //Camera.main.transform.position = new Vector3(0, 0, -10);
+                wallCam.gameObject.SetActive(true);
+                floorCam.gameObject.SetActive(false);
+            }
+            else if (clientName == "Floor")
+            {
+                //Camera.main.transform.position = new Vector3(0, -26.8f, -10);
+                floorCam.gameObject.SetActive(true);
+                wallCam.gameObject.SetActive(false);
+            }
         }
-        else if (clientName == "Floor")
-        {
-            //Camera.main.transform.position = new Vector3(0, -26.8f, -10);
-            floorCam.gameObject.SetActive(true);
-            wallCam.gameObject.SetActive(false);
-        }
+    }
+
+    void FootstepSceneSetup()
+    {
+        CameraSetup();
     }
 
     void FirstSceneSetup()
     {
-        floorCam = GameObject.Find("FloorCam");
-        wallCam = GameObject.Find("Main Camera");
-        
-        if (clientName == "Wall")
-        {
-            floorCam.gameObject.SetActive(false);
-        }
-        else if (clientName == "Floor")
-        {
-            wallCam.gameObject.SetActive(false);
-            //Camera.main.SetActive(false);
-        }
+        CameraSetup();
+    }
+
+    void CanvasSetup()
+    {
+        CameraSetup();
     }
 }

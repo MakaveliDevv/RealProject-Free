@@ -5,12 +5,19 @@ using Cinemachine;
 
 public class yet : MonoBehaviour
 {
+    public static yet instance;
     public CinemachineVirtualCamera virtualCamera; // The Cinemachine Virtual Camera
     public Image targetImage; // The Image component on the Canvas
     public float targetFOV = 60f; // The target FOV for the camera
     public float fovChangeDuration = 2f; // Duration of the FOV change process
     public float fadeDuration = 2f; // Duration of the fade-out process
+    public GameObject footsteps;
+    bool zoomedOut;
 
+    void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
         StartCoroutine(FadeImageAndChangeFOV());
@@ -47,5 +54,7 @@ public class yet : MonoBehaviour
         }
 
         virtualCamera.m_Lens.FieldOfView = targetFOV; // Ensure FOV is set to the target value at the end
+        zoomedOut = true;
+        footsteps.SetActive(true);
     }
 }

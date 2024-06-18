@@ -26,6 +26,9 @@ public class ImageDrawer : NetworkBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = false;
+
         // Create a new Texture2D
         drawingTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGBA32, false);
         

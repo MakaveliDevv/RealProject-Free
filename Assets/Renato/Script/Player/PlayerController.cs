@@ -23,11 +23,11 @@ public class PlayerController : MonoBehaviour
     public float verticalVelocity;
     public bool jumping;
 
-    [SerializeField] private float stepDistance = 1f;
+    [SerializeField] private float stepDistance = 3f;
     private float accumulated_distance;
     private int stepAmount; 
-    [SerializeField] private float bobbingAmount = 0.05f; 
-    [SerializeField] private float bobbingSpeed = 10f; 
+    [SerializeField] private float bobbingAmount = 0.005f; 
+    [SerializeField] private float bobbingSpeed = 3; 
     public bool moving, idle = true, hasStepped;
     // public bool allowedToMove, ableToShake; 
     public bool ableToLookAround;
@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     // Camera
     [Header("Camera Stuff")]
     public Vector3 initialCamPos;
-    [SerializeField] private float cameraOffset = -.5f;
+    [SerializeField] private float cameraOffset = 0f;
     [SerializeField] private float cameraSwayAmount = 0.1f;
     [SerializeField] private float cameraSwaySpeed = 2f; 
     public bool shake;
@@ -62,11 +62,12 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         ableToLookAround = true;
+        initialCamPos = cam.transform.localPosition;
     }
 
     void FixedUpdate() 
     {
-        CameraShake();
+        // CameraShake();
         if(!_InspectObject.inspectMode) 
         {
             LookAround();
@@ -136,11 +137,11 @@ public class PlayerController : MonoBehaviour
 
         controller.Move(speed * Time.deltaTime * finalMoveDirection);
 
-        Vector3 currentCamPos = cam.transform.localPosition;
+        // Vector3 currentCamPos = cam.transform.localPosition;
 
         if (controller.velocity.sqrMagnitude > 0.01f)
         {
-            //cam.transform.localPosition = initialCamPos;
+            cam.transform.localPosition = initialCamPos;
 
             accumulated_distance += controller.velocity.magnitude * Time.deltaTime;
             if (accumulated_distance > stepDistance)
@@ -158,7 +159,7 @@ public class PlayerController : MonoBehaviour
                 }
 
                 accumulated_distance = 0f;
-                cam.transform.localPosition = currentCamPos;
+                // cam.transform.localPosition = currentCamPos;
             }
         }
         else
@@ -200,23 +201,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-   private void CameraShake() 
-    {
-        cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
-        if(inspectObject.inspectMode)
-            return;
+    // private void CameraShake() 
+    // {
+    //     cam.gameObject.TryGetComponent<InspectObject>(out var inspectObject);
+    //     if(inspectObject.inspectMode)
+    //         return;
 
-        // Shake camera
-        if (idle) 
-        {            
-            float swayOffsetX = Mathf.Sin(Time.time * cameraSwaySpeed) * cameraSwayAmount;
-            float swayOffsetY = Mathf.Cos(Time.time * cameraSwaySpeed * 0.5f) * cameraSwayAmount + (transform.position.y + cameraOffset);
+    //     // Shake camera
+    //     if (idle) 
+    //     {            
+    //         float swayOffsetX = Mathf.Sin(Time.time * cameraSwaySpeed) * cameraSwayAmount;
+    //         float swayOffsetY = Mathf.Cos(Time.time * cameraSwaySpeed * 0.5f) * (cameraSwayAmount + cameraOffset);
 
-            Vector3 cameraSway = new(swayOffsetX, swayOffsetY, 0f);
-            cam.transform.localPosition = cameraSway;
-            shake = true;
-        }
-    }
+    //         Vector3 cameraSway = new(swayOffsetX, swayOffsetY, 0f);
+    //         cam.transform.localPosition = cameraSway;
+    //         shake = true;
+    //     }
+    //     else 
+    //     {
+    //         cam.transform.localPosition = initialCamPos;
+    //     }
+    // }
 
     public void Jump() 
     {

@@ -25,7 +25,6 @@ public class OrbMovement : MonoBehaviour
     void Awake() 
     {
         instance = this;
-        DontDestroyOnLoad(gameObject);
     }
     
     #endregion

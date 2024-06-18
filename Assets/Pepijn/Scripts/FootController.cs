@@ -16,19 +16,21 @@ public class FootController : NetworkBehaviour
     public float rotationSpeed;
     public float stepSize, stepCooldown;
     public FootstepPlayer footstepPlayer;
+    public bool wizardOfOz;
     bool walking;
     // Visualizer
-    public float minX = -21f;
-    public float maxX = 21f;
-    public float minY = -38f;
-    public float maxY = 12f;
+    float minX = -39f;
+    float maxX = 39f;
+    float minY = -66f;
+    float maxY = 24f;
     
     void Start()
     {
         isFirstStep = true;
         isStepOnCooldown = false;
-    }
 
+        gameObject.SetActive(false);
+    }
 
     void OnDrawGizmos()
     {
@@ -65,6 +67,15 @@ public class FootController : NetworkBehaviour
 
     // Update is called once per frame
     void Update()
+    {
+        if ((wizardOfOz && ClientScript.instance.clientName == "Floor") || (!wizardOfOz && ClientScript.instance.clientName == "Wall"))
+        {
+            Walk();
+            Debug.Log("walk");
+        } 
+    }
+
+    void Walk()
     {
         // inputDirection = new(inputVector.x, 0f);
         if (IsOwner)
@@ -152,7 +163,7 @@ public class FootController : NetworkBehaviour
         // Debug.Log("New empty GameObject translated to position: " + newEmpty.transform.position);
 
         // Screen borders
-        if (newEmpty.transform.position.x >= -21 && newEmpty.transform.position.x <= 21 && newEmpty.transform.position.y >= -38 && newEmpty.transform.position.y <= 12)
+        if (newEmpty.transform.position.x >= minX && newEmpty.transform.position.x <= maxX && newEmpty.transform.position.y >= minY && newEmpty.transform.position.y <= maxY)
         {
             // Debug.Log("Game Object is within the screen bounds");
 
@@ -392,5 +403,7 @@ public class FootController : NetworkBehaviour
         {
             newPrint = Instantiate(rightStepPrefab, position, rotation);
         }
+        newPrint.transform.Rotate(0, 0, 180);
+        newPrint.transform.localScale = rightFoot.transform.localScale;
     }
 }

@@ -17,5 +17,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pepijn/Scenes/Canvas.unity
     guid: bb5c97e8a97a4a64b8b37ec9aca8f29c
+  - enabled: 1
+    path: Assets/Rui/Voeten2.unity
+    guid: 2b65ea98ba733994da4bb5967a41830c
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: af2ecdb230d51974e95881298d2df3d8, type: 2}
