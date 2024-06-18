@@ -31,7 +31,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d4c867f6b72b714dbb5fd1780afe208, type: 3}
-  m_Name: purple ring
+  m_Name: green ring
   m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
@@ -78,9 +78,9 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 3.5
     min: 1
-    max: 2
+    max: 20
     enumValues: []
     descendantCount: 0
   - name: Dikte
@@ -92,7 +92,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0.218
+      m_SerializableObject: 0.1
     min: 0.1
     max: 0.3
     enumValues: []
@@ -108,7 +108,7 @@ VisualEffectResource:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: purple ring
+  m_Name: green ring
   m_Graph: {fileID: 114350483966674976}
   m_Infos:
     m_RendererSettings:
@@ -4615,7 +4615,7 @@ MonoBehaviour:
     m_Type:
       m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
-    m_SerializableObject: 2
+    m_SerializableObject: 20
   m_IsOutput: 0
   m_EnumValues: []
   m_ValueFilter: 1
@@ -4653,7 +4653,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 3.5
     m_Space: 2147483647
   m_Property:
     name: o
@@ -4939,7 +4939,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0.1
+      m_SerializableObject: 4
     m_Space: 2147483647
   m_Property:
     name: dragCoefficient
@@ -5529,7 +5529,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0.218
+      m_SerializableObject: 0.1
     m_Space: 2147483647
   m_Property:
     name: o
@@ -7258,7 +7258,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Gradient, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"colorKeys":[{"color":{"r":5.819616317749023,"g":1.2856613397598267,"b":38.93714904785156,"a":1.0},"time":0.0},{"color":{"r":32.57722091674805,"g":11.844228744506836,"b":2.2172980308532717,"a":1.0},"time":0.19412527978420258},{"color":{"r":3.7744140625,"g":33.05744171142578,"b":0.2196454405784607,"a":1.0},"time":0.3676508665084839},{"color":{"r":0.0,"g":4.217434406280518,"b":14.928528785705567,"a":1.0},"time":0.5117723345756531},{"color":{"r":6.301060676574707,"g":0.0,"b":5.795413494110107,"a":1.0},"time":0.7088273167610169},{"color":{"r":137.18698120117188,"g":0.0,"b":118.67887878417969,"a":1.0},"time":1.0}],"alphaKeys":[{"alpha":1.0,"time":0.0},{"alpha":1.0,"time":0.885297954082489},{"alpha":1.0,"time":1.0}],"gradientMode":2}'
+      m_SerializableObject: '{"colorKeys":[{"color":{"r":46.58689880371094,"g":45.85394287109375,"b":51.98414611816406,"a":1.0},"time":0.0},{"color":{"r":1.4971379041671754,"g":6.301060676574707,"b":0.0,"a":1.0},"time":0.4294193983078003},{"color":{"r":18.708425521850587,"g":139.9583282470703,"b":0.0,"a":1.0},"time":0.9970549941062927}],"alphaKeys":[{"alpha":1.0,"time":0.0},{"alpha":1.0,"time":0.885297954082489},{"alpha":1.0,"time":1.0}],"gradientMode":2}'
     m_Space: 2147483647
   m_Property:
     name: Color
@@ -8559,7 +8559,7 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_MasterSlot: {fileID: 8926484042661615070}
   m_MasterData:
-    m_Owner: {fileID: 0}
+    m_Owner: {fileID: 8926484042661614555}
     m_Value:
       m_Type:
         m_SerializableType: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,

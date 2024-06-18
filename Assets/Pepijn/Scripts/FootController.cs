@@ -22,12 +22,6 @@ public class FootController : NetworkBehaviour
     public float maxX = 21f;
     public float minY = -38f;
     public float maxY = 12f;
-
-    // Visualizer
-    public float minX = -21f;
-    public float maxX = 21f;
-    public float minY = -38f;
-    public float maxY = 12f;
     
     void Start()
     {
@@ -35,20 +29,6 @@ public class FootController : NetworkBehaviour
         isStepOnCooldown = false;
     }
 
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-
-        // Draw the outer borders
-        Gizmos.DrawLine(new Vector3(minX, minY, 0), new Vector3(maxX, minY, 0));
-        Gizmos.DrawLine(new Vector3(maxX, minY, 0), new Vector3(maxX, maxY, 0));
-        Gizmos.DrawLine(new Vector3(maxX, maxY, 0), new Vector3(minX, maxY, 0));
-        Gizmos.DrawLine(new Vector3(minX, maxY, 0), new Vector3(minX, minY, 0));
-
-        // Draw the horizontal line to split the areas
-        float midY = (minY + maxY) / 2;
-        Gizmos.DrawLine(new Vector3(minX, midY, 0), new Vector3(maxX, midY, 0));
-    }
 
     void OnDrawGizmos()
     {
