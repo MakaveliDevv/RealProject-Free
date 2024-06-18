@@ -27,9 +27,9 @@ Transform:
   m_GameObject: {fileID: 3267543309082828342}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: -1.2, z: -0.16}
+  m_LocalScale: {x: 1.24, y: 1.24, z: 1.24}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 9146745624536695320}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -41,7 +41,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3267543309082828342}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 9221c431c6da9764a86f9f7fcbc63a3a, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: c595258ef9da7734daa8e161d9dbbdf8, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 3104890325220036786}
   - component: {fileID: -1323276868238050607}
   m_Layer: 0
-  m_Name: Ster
+  m_Name: Ster groien 1
   m_TagString: Star
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -160,7 +160,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 11.11, y: -27.461, z: 9.086}
-  m_LocalScale: {x: 2.54, y: 2.54, z: 2.54}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 472017838138702785}
@@ -194,7 +194,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 33bfd586890b7e34fa2ee2c7d50dcac1, type: 2}
+  - {fileID: 2100000, guid: e78ed745987abe14ea8e546ce11b0d24, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -274,7 +274,7 @@ MonoBehaviour:
   hasStartingPosition: 0
   inGravitationalCircle: 0
   isInitializing: 1
-  ableToMove: 1
+  ableToMove: 0
 --- !u!54 &-1323276868238050607
 Rigidbody:
   m_ObjectHideFlags: 0

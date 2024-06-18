@@ -17,7 +17,6 @@ public class FootController : NetworkBehaviour
     public float stepSize, stepCooldown;
     public FootstepPlayer footstepPlayer;
     bool walking;
-
     // Visualizer
     public float minX = -21f;
     public float maxX = 21f;
@@ -29,6 +28,7 @@ public class FootController : NetworkBehaviour
         isFirstStep = true;
         isStepOnCooldown = false;
     }
+
 
     void OnDrawGizmos()
     {

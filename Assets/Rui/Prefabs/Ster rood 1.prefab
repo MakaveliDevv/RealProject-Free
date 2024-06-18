@@ -41,7 +41,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3267543309082828342}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 9221c431c6da9764a86f9f7fcbc63a3a, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: a73a968cd56458541b5a5699c4e33ce0, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -72,7 +72,7 @@ VisualEffect:
       m_Array: []
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 1.1353015, y: 0.36289898, z: 0, w: 0}
+      - m_Value: {x: 1.5157166, y: 0, z: 0, w: 0}
         m_Name: Kleur
         m_Overridden: 1
     m_Uint:
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 3104890325220036786}
   - component: {fileID: -1323276868238050607}
   m_Layer: 0
-  m_Name: Ster
+  m_Name: Ster rood 1
   m_TagString: Star
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -160,7 +160,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 11.11, y: -27.461, z: 9.086}
-  m_LocalScale: {x: 2.54, y: 2.54, z: 2.54}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 472017838138702785}
@@ -194,7 +194,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 33bfd586890b7e34fa2ee2c7d50dcac1, type: 2}
+  - {fileID: 2100000, guid: 3d85db60ad3e7114a916cef96eef6d4e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -274,7 +274,7 @@ MonoBehaviour:
   hasStartingPosition: 0
   inGravitationalCircle: 0
   isInitializing: 1
-  ableToMove: 1
+  ableToMove: 0
 --- !u!54 &-1323276868238050607
 Rigidbody:
   m_ObjectHideFlags: 0
