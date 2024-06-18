@@ -70,6 +70,98 @@ public partial class @MovementController: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Canvas"",
+            ""id"": ""13dcd254-2f77-4af4-a678-90b9b9341b9d"",
+            ""actions"": [
+                {
+                    ""name"": ""MoveCursor"",
+                    ""type"": ""Value"",
+                    ""id"": ""700b9f14-b62f-4f43-af34-319bfe2b3d5f"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Paint"",
+                    ""type"": ""Button"",
+                    ""id"": ""8a00a3c3-ffc4-483f-bdab-e5dd1d2f4b2b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""8a780c5d-b193-49b7-8979-6d0eba4233f0"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCursor"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""9023f658-3ed7-41ac-8d7f-7a01ab180342"",
+                    ""path"": ""<Gamepad>/rightStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""2477b339-6fe7-460b-8dc5-f8bb33870944"",
+                    ""path"": ""<Gamepad>/rightStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""89fe8c68-0569-4116-9d2a-6c84fda289a5"",
+                    ""path"": ""<Gamepad>/rightStick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""cde595f7-ed8e-447d-ba41-7610aeacfd83"",
+                    ""path"": ""<Gamepad>/rightStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c2cbdc9a-5471-42ff-8673-2ae96868a084"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -78,6 +170,10 @@ public partial class @MovementController: IInputActionCollection2, IDisposable
         m_Feet = asset.FindActionMap("Feet", throwIfNotFound: true);
         m_Feet_MoveLeft = m_Feet.FindAction("MoveLeft", throwIfNotFound: true);
         m_Feet_MoveRigt = m_Feet.FindAction("MoveRigt", throwIfNotFound: true);
+        // Canvas
+        m_Canvas = asset.FindActionMap("Canvas", throwIfNotFound: true);
+        m_Canvas_MoveCursor = m_Canvas.FindAction("MoveCursor", throwIfNotFound: true);
+        m_Canvas_Paint = m_Canvas.FindAction("Paint", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -189,9 +285,68 @@ public partial class @MovementController: IInputActionCollection2, IDisposable
         }
     }
     public FeetActions @Feet => new FeetActions(this);
+
+    // Canvas
+    private readonly InputActionMap m_Canvas;
+    private List<ICanvasActions> m_CanvasActionsCallbackInterfaces = new List<ICanvasActions>();
+    private readonly InputAction m_Canvas_MoveCursor;
+    private readonly InputAction m_Canvas_Paint;
+    public struct CanvasActions
+    {
+        private @MovementController m_Wrapper;
+        public CanvasActions(@MovementController wrapper) { m_Wrapper = wrapper; }
+        public InputAction @MoveCursor => m_Wrapper.m_Canvas_MoveCursor;
+        public InputAction @Paint => m_Wrapper.m_Canvas_Paint;
+        public InputActionMap Get() { return m_Wrapper.m_Canvas; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CanvasActions set) { return set.Get(); }
+        public void AddCallbacks(ICanvasActions instance)
+        {
+            if (instance == null || m_Wrapper.m_CanvasActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_CanvasActionsCallbackInterfaces.Add(instance);
+            @MoveCursor.started += instance.OnMoveCursor;
+            @MoveCursor.performed += instance.OnMoveCursor;
+            @MoveCursor.canceled += instance.OnMoveCursor;
+            @Paint.started += instance.OnPaint;
+            @Paint.performed += instance.OnPaint;
+            @Paint.canceled += instance.OnPaint;
+        }
+
+        private void UnregisterCallbacks(ICanvasActions instance)
+        {
+            @MoveCursor.started -= instance.OnMoveCursor;
+            @MoveCursor.performed -= instance.OnMoveCursor;
+            @MoveCursor.canceled -= instance.OnMoveCursor;
+            @Paint.started -= instance.OnPaint;
+            @Paint.performed -= instance.OnPaint;
+            @Paint.canceled -= instance.OnPaint;
+        }
+
+        public void RemoveCallbacks(ICanvasActions instance)
+        {
+            if (m_Wrapper.m_CanvasActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ICanvasActions instance)
+        {
+            foreach (var item in m_Wrapper.m_CanvasActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_CanvasActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public CanvasActions @Canvas => new CanvasActions(this);
     public interface IFeetActions
     {
         void OnMoveLeft(InputAction.CallbackContext context);
         void OnMoveRigt(InputAction.CallbackContext context);
+    }
+    public interface ICanvasActions
+    {
+        void OnMoveCursor(InputAction.CallbackContext context);
+        void OnPaint(InputAction.CallbackContext context);
     }
 }

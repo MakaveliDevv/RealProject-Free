@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class ImageDrawer : NetworkBehaviour
 {
@@ -23,6 +24,8 @@ public class ImageDrawer : NetworkBehaviour
     GameObject currentStar;
 
     [SerializeField] List<GameObject> starList = new List<GameObject>();
+
+    public FollowCursor followCursor;
 
     void Start()
     {
@@ -58,18 +61,33 @@ public class ImageDrawer : NetworkBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            isDrawing = true;
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            isDrawing = false;
-        }
+        // if (Input.GetMouseButtonDown(0))
+        // {
+        //     isDrawing = true;
+        // }
+        // else if (Input.GetMouseButtonUp(0))
+        // {
+        //     isDrawing = false;
+        // }
 
         if ((isDrawing) && (ammo >= 0))
         {
-            DrawServerRpc(Input.mousePosition);
+            // DrawServerRpc(Input.mousePosition);
+            DrawServerRpc();
+        }
+    }
+
+    public void InputPaint(InputAction.CallbackContext ctx) 
+    {
+        if(ctx.performed)
+        {
+            isDrawing = true;
+            Debug.Log("We can paint now!");
+        }
+        else if(ctx.canceled)
+        {
+            isDrawing = false;
+            Debug.Log("Stopped painting...");
         }
     }
 
@@ -100,15 +118,14 @@ public class ImageDrawer : NetworkBehaviour
 
 
     [ServerRpc]
-    private void DrawServerRpc(Vector2 screenPosition)
+    private void DrawServerRpc()
     {
         if (IsServer)
         {
-             // Convert world position to screen position
-            Vector2 screenPosition2 = Camera.main.WorldToScreenPoint(Input.mousePosition);
+            // Convert world position to screen position
+            Vector2 screenPosition2 = Camera.main.WorldToScreenPoint(followCursor.inputDirection);
 
-            Vector2 localPos;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(targetImage.rectTransform, screenPosition2, Camera.main, out localPos);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(targetImage.rectTransform, screenPosition2, Camera.main, out Vector2 localPos);
 
             // Map local position to texture coordinates
             Rect rect = targetImage.rectTransform.rect;
