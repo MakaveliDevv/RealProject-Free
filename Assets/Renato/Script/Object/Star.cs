@@ -42,14 +42,17 @@ public class Star : Interactable
     {
         if(collider.CompareTag("Footstep")) 
         {
-            interact = true;
-
-            if(ableToMove)
+            if (ClientScript.instance.clientName == "Wall")
             {
-                StartCoroutine(MoveTowardsControlPoint(point.transform));
-                
-                // Indicate that the object is in the gravitational orbit
-                insideOrbit = true;
+                interact = true;
+
+                if(ableToMove)
+                {
+                    StartCoroutine(MoveTowardsControlPoint(point.transform));
+                    
+                    // Indicate that the object is in the gravitational orbit
+                    insideOrbit = true;
+                }
             }
 
         }
@@ -69,6 +72,10 @@ public class Star : Interactable
 
         transform.position = target.position;
         if(transform.position == target.position)
+        {
             ableToMove = false;
+            // transform.SetParent(null);
+            // DontDestroyOnLoad(gameObject);
+        }
     }
 }

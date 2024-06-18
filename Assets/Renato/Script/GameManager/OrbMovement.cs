@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class OrbMovement : MonoBehaviour
 {
@@ -19,9 +20,12 @@ public class OrbMovement : MonoBehaviour
 
     #region Singleton
     public static OrbMovement instance;
+
+    // bool loaded = true;
     void Awake() 
     {
         instance = this;
+        DontDestroyOnLoad(gameObject);
     }
     
     #endregion

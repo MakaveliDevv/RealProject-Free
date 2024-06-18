@@ -2,17 +2,27 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System.Collections;
+using System.Collections.Generic;
 
 public class ImageDrawer : NetworkBehaviour
 {
     public Color brushColor = Color.black;
     public int brushSize = 10;
-    public Image targetImage;
+    public Image targetImage, worldSpaceImage, floorSpaceImage;
     public int textureWidth = 1920;
     public int textureHeight = 1080;
 
+    public int ammo, individualStarAmmo;
+    public float initialStarSize, stepSize;
+    [SerializeField] int ammoNeeded;
+
     private Texture2D drawingTexture;
     private bool isDrawing = false;
+    public bool starSelected;
+    GameObject currentStar;
+
+    [SerializeField] List<GameObject> starList = new List<GameObject>();
 
     void Start()
     {
@@ -29,10 +39,18 @@ public class ImageDrawer : NetworkBehaviour
         drawingTexture.Apply();
 
         // Create a Sprite from the Texture2D and set it to the Image component
-        if (targetImage != null)
+        worldSpaceImage.sprite = Sprite.Create(drawingTexture, new Rect(0, 0, drawingTexture.width, drawingTexture.height), new Vector2(0.5f, 0.5f));
+        floorSpaceImage.sprite = Sprite.Create(drawingTexture, new Rect(0, 0, drawingTexture.width, drawingTexture.height), new Vector2(0.5f, 0.5f));
+        
+
+        GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+        foreach (GameObject star in stars)
         {
-            targetImage.sprite = Sprite.Create(drawingTexture, new Rect(0, 0, drawingTexture.width, drawingTexture.height), new Vector2(0.5f, 0.5f));
+            starList.Add(star);
         }
+
+        individualStarAmmo = ammoNeeded / starList.Count;
+        ammo = individualStarAmmo;
     }
 
     void Update()
@@ -46,22 +64,64 @@ public class ImageDrawer : NetworkBehaviour
             isDrawing = false;
         }
 
-        if (isDrawing)
+        if ((isDrawing) && (ammo >= 0))
         {
             DrawServerRpc(Input.mousePosition);
         }
     }
+
+    void ShrinkStars()
+    {
+        if (!starSelected)
+        {
+            currentStar = starList[0];
+            initialStarSize = currentStar.transform.localScale.x;
+            starSelected = true;
+            stepSize = initialStarSize / individualStarAmmo;
+        }
+
+        float scaleChange = (stepSize * (individualStarAmmo - ammo));
+        float newScale = initialStarSize - scaleChange;
+        currentStar.transform.localScale = new Vector3(newScale, newScale, newScale);
+
+        if (currentStar.transform.localScale.x <= 0)
+        {
+            starSelected = false;
+            starList.RemoveAt(0);
+            if (starList.Count > 0)
+            {
+                ammo = individualStarAmmo;
+            }
+        }
+    }
+
+
     [ServerRpc]
     private void DrawServerRpc(Vector2 screenPosition)
     {
         if (IsServer)
         {
+             // Convert world position to screen position
+            Vector2 screenPosition2 = Camera.main.WorldToScreenPoint(Input.mousePosition);
+
             Vector2 localPos;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(targetImage.rectTransform, screenPosition, null, out localPos);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(targetImage.rectTransform, screenPosition2, Camera.main, out localPos);
 
             // Map local position to texture coordinates
-            float x = (localPos.x + targetImage.rectTransform.rect.width / 2f) / targetImage.rectTransform.rect.width * textureWidth;
-            float y = (localPos.y + targetImage.rectTransform.rect.height / 2f) / targetImage.rectTransform.rect.height * textureHeight;
+            Rect rect = targetImage.rectTransform.rect;
+            float pivotOffsetX = rect.width * targetImage.rectTransform.pivot.x;
+            float pivotOffsetY = rect.height * targetImage.rectTransform.pivot.y;
+            float x = (localPos.x + pivotOffsetX) / rect.width * drawingTexture.width;
+            float y = (localPos.y + pivotOffsetY) / rect.height * drawingTexture.height;
+
+            // Vector2 localPos;
+            // RectTransformUtility.ScreenPointToLocalPointInRectangle(targetImage.rectTransform, screenPosition, null, out localPos);
+
+            // Map local position to texture coordinates
+            // Rect rect = targetImage.rectTransform.rect;
+            // float x = (localPos.x - rect.x) / rect.width * drawingTexture.width;
+            // float y = (localPos.y - rect.y) / rect.height * drawingTexture.height;
+
 
             DrawClientRpc(x, y);
         }
@@ -77,8 +137,23 @@ public class ImageDrawer : NetworkBehaviour
                 {
                     int pixelX = Mathf.Clamp((int)x + i, 0, drawingTexture.width - 1);
                     int pixelY = Mathf.Clamp((int)y + j, 0, drawingTexture.height - 1);
-                    drawingTexture.SetPixel(pixelX, pixelY, brushColor);
+
+                    Color currentColor = drawingTexture.GetPixel(pixelX, pixelY);
+
+                    if (currentColor != brushColor)
+                    {
+                        // Only set the pixel if the color is different
+                        drawingTexture.SetPixel(pixelX, pixelY, brushColor);
+                        ammo--;
+                        ShrinkStars();
+                        //Debug.Log("drawing");
+                    }
+                    else
+                    {
+                        //Debug.Log("already black");
+                    }
                 }
+                    
             }
         }
 

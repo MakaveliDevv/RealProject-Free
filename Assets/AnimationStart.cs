@@ -2,8 +2,10 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Unity.Netcode;
+using UnityEngine.Networking;
 
-public class AnimationStart : MonoBehaviour
+public class AnimationStart : NetworkBehaviour
 {
     private GameObject cutscene;
     public Image fadeImage; // The image to fade in
@@ -49,10 +51,8 @@ public class AnimationStart : MonoBehaviour
                     // Check if the object is released
                     if(_PlayerInteraction._Interactable.objectReleased)
                     {
-                        // Start animation
-                        cutscene.SetActive(true);
-                        StartCoroutine(HandleCutscene()); 
-                        UIelement.SetActive(false);
+                        //StartCoroutine(HandleCutscene()); 
+                        StartCutsceneServerRpc();
                     }
                 }
             }
@@ -70,6 +70,10 @@ public class AnimationStart : MonoBehaviour
 
     private IEnumerator HandleCutscene()
     {
+        // Start animation
+        cutscene.SetActive(true);
+        UIelement.SetActive(false);
+
         yield return new WaitForSeconds(waitTimeBeforeFade); // Wait for the specified time
 
         animStart = true;
@@ -88,6 +92,50 @@ public class AnimationStart : MonoBehaviour
 
         fadeImage.color = endColor; // Ensure the color is set to the end color
 
-        SceneManager.LoadScene(nextSceneName); // Load the next scene
+        //SceneManager.LoadScene(nextSceneName); // Load the next scene
+
+        var status = NetworkManager.SceneManager.LoadScene(nextSceneName, LoadSceneMode.Single);
+        if (status != SceneEventProgressStatus.Started)
+        {
+            Debug.LogWarning($"Failed to load {nextSceneName} " +
+                    $"with a {nameof(SceneEventProgressStatus)}: {status}");
+        }
     }
+
+    [ServerRpc]
+    private void StartCutsceneServerRpc()
+    {
+        //if (ClientScript.instance.clientName == "Wall")
+        if (IsServer)
+        {
+            StartCutsceneClientRpc();
+        }
+    }
+
+    [ClientRpc]
+    private void StartCutsceneClientRpc()
+    {
+        // if (IsOwner)
+        // {
+            StartCoroutine(HandleCutscene());
+        // }
+    }
+
+    // [ServerRpc]
+    // private void LoadNextSceneServerRpc()
+    // {
+    //     if (IsServer)
+    //     {
+    //         LoadNextSceneClientRpc();
+    //     }
+    // }
+
+    // [ClientRpc]
+    // private void LoadNextSceneClientRpc()
+    // {
+    //     if (IsOwner)
+    //     {
+    //         SceneManager.LoadScene(nextSceneName);
+    //     }
+    // }
 }

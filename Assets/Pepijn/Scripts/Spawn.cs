@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class Spawn : MonoBehaviour
+public class Spawn : NetworkBehaviour
 {
     [SerializeField] private int maxAmount = 8; 
     [SerializeField] private GameObject prefab; 
@@ -34,20 +35,20 @@ public class Spawn : MonoBehaviour
         }
     }
 
-    void InstantiateObj() 
-    {
-        Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+    // void InstantiateObj() 
+    // {
+    //     Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
-        Star star = prefab.GetComponent<Star>();
+    //     Star star = prefab.GetComponent<Star>();
 
-        GameObject spawnedObj = Instantiate(prefab, randomSpawnPoint.position, Quaternion.identity);
-        spawnedObjects.Add(spawnedObj);
-        spawnedObj.transform.SetParent(gameManager);
+    //     GameObject spawnedObj = Instantiate(prefab, randomSpawnPoint.position, Quaternion.identity);
+    //     spawnedObjects.Add(spawnedObj);
+    //     spawnedObj.transform.SetParent(gameManager);
 
-        Coroutine destroyCoroutine = StartCoroutine(DestroyAfterTime(spawnedObj, objectDuration));
-        destroyCoroutines.Add(spawnedObj, destroyCoroutine);
-        star.ableToMove = true;
-    }
+    //     Coroutine destroyCoroutine = StartCoroutine(DestroyAfterTime(spawnedObj, objectDuration));
+    //     destroyCoroutines.Add(spawnedObj, destroyCoroutine);
+    //     star.ableToMove = true;
+    // }
 
     private IEnumerator SpawnObjects() 
     {
@@ -55,7 +56,11 @@ public class Spawn : MonoBehaviour
         {
             if (spawnedObjects.Count < maxAmount)
             {
-                InstantiateObj();
+                if (ClientScript.instance.clientName == "Wall")
+                {
+                    InstantiateObjServerRpc();
+                    Debug.Log("spawn star");
+                }
 
                 yield return new WaitForSeconds(interval);
             }
@@ -73,4 +78,24 @@ public class Spawn : MonoBehaviour
         destroyCoroutines.Remove(obj);
         Destroy(obj);  
     }
+
+    [ServerRpc]
+    void InstantiateObjServerRpc()
+    {
+        //Debug.Log("spawn star");
+
+        Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+
+        Star star = prefab.GetComponent<Star>();
+
+        GameObject spawnedObj = Instantiate(prefab, randomSpawnPoint.position, Quaternion.identity);
+        spawnedObj.GetComponent<NetworkObject>().Spawn(true);
+        spawnedObjects.Add(spawnedObj);
+        spawnedObj.transform.SetParent(gameManager);
+
+        Coroutine destroyCoroutine = StartCoroutine(DestroyAfterTime(spawnedObj, objectDuration));
+        destroyCoroutines.Add(spawnedObj, destroyCoroutine);
+        star.ableToMove = true;
+    }
+
 }

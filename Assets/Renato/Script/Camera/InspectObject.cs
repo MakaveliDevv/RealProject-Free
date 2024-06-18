@@ -78,12 +78,19 @@ public class InspectObject : MonoBehaviour
 
     public bool CameraToMouseRay()
     {
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-        rayOrigin = ray.origin;
-        rayDirection = ray.direction;
-        rayExists = true;  // Indicate that a ray exists
+        if (ClientScript.instance.clientName == "Wall")
+        {
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            rayOrigin = ray.origin;
+            rayDirection = ray.direction;
+            rayExists = true;  // Indicate that a ray exists
 
-        return Physics.Raycast(ray, out hitInfo, distance);
+            return Physics.Raycast(ray, out hitInfo, distance);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private void OnDrawGizmos()
