@@ -4,20 +4,24 @@ using UnityEngine;
 
 public class InputManag : MonoBehaviour
 {
-    public PlayerInputAction inputPlayer;
+    public PlayerInputAction InputPlayer;
+    public MovementController MovementController;
 
     private void Awake()
     {
-        inputPlayer = new PlayerInputAction();
+        InputPlayer = new PlayerInputAction();
+        MovementController = new MovementController();
     }
 
     private void OnEnable() 
     {
-        inputPlayer.Enable();
+        InputPlayer.Enable();
+        MovementController.Enable();
     }
 
     private void OnDisable()
     {
-        inputPlayer.Disable();
+        InputPlayer.Disable();
+        MovementController.Disable();
     }
 }
